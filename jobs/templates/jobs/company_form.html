@@ -7,7 +7,7 @@
     <div class="col-lg-8">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="display-6 fw-bold mb-2 text-dark">🏢 {{ title }}</h1>
+                <h1 class="display-6 fw-bold mb-2">🏢 {{ title }}</h1>
                 <p class="text-muted mb-0">{% if company %}Update company information{% else %}Add a new company to track job opportunities{% endif %}</p>
             </div>
             <a href="{% url 'jobs:company_list' %}" class="btn btn-outline-secondary">
@@ -22,7 +22,7 @@
                     
                     <div class="row g-4">
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.name.label }} *</label>
+                            <label class="form-label fw-medium">{{ form.name.label }} *</label>
                             {{ form.name }}
                             {% if form.name.errors %}
                                 <div class="invalid-feedback d-block">
@@ -32,7 +32,7 @@
                         </div>
                         
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.industry.label }}</label>
+                            <label class="form-label fw-medium">{{ form.industry.label }}</label>
                             {{ form.industry }}
                             {% if form.industry.errors %}
                                 <div class="invalid-feedback d-block">
@@ -42,7 +42,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.website.label }}</label>
+                            <label class="form-label fw-medium">{{ form.website.label }}</label>
                             {{ form.website }}
                             {% if form.website.errors %}
                                 <div class="invalid-feedback d-block">
@@ -52,7 +52,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.location.label }}</label>
+                            <label class="form-label fw-medium">{{ form.location.label }}</label>
                             {{ form.location }}
                             {% if form.location.errors %}
                                 <div class="invalid-feedback d-block">
@@ -62,7 +62,7 @@
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label fw-medium text-dark">{{ form.description.label }}</label>
+                            <label class="form-label fw-medium">{{ form.description.label }}</label>
                             {{ form.description }}
                             {% if form.description.errors %}
                                 <div class="invalid-feedback d-block">

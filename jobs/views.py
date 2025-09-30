@@ -418,9 +418,9 @@ def statistics(request):
     # Status statistics with percentages
     status_stats = []
     for status_code, status_name in JobApplication.STATUS_CHOICES:
-        count = user_applications.filter(status=status_code).count()
-        percentage = round((count / total_applications * 100) if total_applications > 0 else 0, 1)
-        status_stats.append((status_code, count, percentage))
+        status_count = user_applications.filter(status=status_code).count()
+        percentage = round((status_count / total_applications * 100) if total_applications > 0 else 0, 1)
+        status_stats.append((status_code, status_count, percentage))
     
     # Calculate derived metrics
     applications_this_month = user_applications.filter(
@@ -451,7 +451,6 @@ def statistics(request):
     
     # Timeline data (last 6 months)
     from datetime import datetime, timedelta
-    from django.db.models import Count
     from django.db.models.functions import TruncMonth
     
     six_months_ago = timezone.now() - timedelta(days=180)

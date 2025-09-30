@@ -7,7 +7,7 @@
     <div class="col-lg-10">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="display-6 fw-bold mb-2 text-dark">📝 {{ title }}</h1>
+                <h1 class="display-6 fw-bold mb-2">📝 {{ title }}</h1>
                 <p class="text-muted mb-0">Create a new job application and company in one step</p>
             </div>
             <a href="{% url 'jobs:application_list' %}" class="btn btn-outline-secondary">
@@ -26,14 +26,14 @@
                             <i class="bi bi-building text-primary" style="font-size: 1.5rem;"></i>
                         </div>
                         <div>
-                            <h4 class="fw-bold mb-1 text-dark">Company Information</h4>
+                            <h4 class="fw-bold mb-1 ">Company Information</h4>
                             <p class="text-muted mb-0">Add details about the company you're applying to</p>
                         </div>
                     </div>
                     
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.company_name.label }} *</label>
+                            <label class="form-label fw-medium ">{{ form.company_name.label }} *</label>
                             {{ form.company_name }}
                             {% if form.company_name.errors %}
                                 <div class="invalid-feedback d-block">
@@ -42,7 +42,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.company_website.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.company_website.label }}</label>
                             {{ form.company_website }}
                             {% if form.company_website.errors %}
                                 <div class="invalid-feedback d-block">
@@ -51,7 +51,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.company_location.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.company_location.label }}</label>
                             {{ form.company_location }}
                             {% if form.company_location.errors %}
                                 <div class="invalid-feedback d-block">
@@ -60,7 +60,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.company_industry.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.company_industry.label }}</label>
                             {{ form.company_industry }}
                             {% if form.company_industry.errors %}
                                 <div class="invalid-feedback d-block">
@@ -69,7 +69,7 @@
                             {% endif %}
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-medium text-dark">{{ form.company_description.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.company_description.label }}</label>
                             {{ form.company_description }}
                             {% if form.company_description.errors %}
                                 <div class="invalid-feedback d-block">
@@ -89,14 +89,14 @@
                             <i class="bi bi-briefcase text-success" style="font-size: 1.5rem;"></i>
                         </div>
                         <div>
-                            <h4 class="fw-bold mb-1 text-dark">Job Position</h4>
+                            <h4 class="fw-bold mb-1 ">Job Position</h4>
                             <p class="text-muted mb-0">Define the role you're applying for</p>
                         </div>
                     </div>
                     
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.job_title.label }} *</label>
+                            <label class="form-label fw-medium ">{{ form.job_title.label }} *</label>
                             {{ form.job_title }}
                             {% if form.job_title.errors %}
                                 <div class="invalid-feedback d-block">
@@ -105,7 +105,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.employment_type.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.employment_type.label }}</label>
                             {{ form.employment_type }}
                             {% if form.employment_type.errors %}
                                 <div class="invalid-feedback d-block">
@@ -114,7 +114,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.job_location.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.job_location.label }}</label>
                             {{ form.job_location }}
                             {% if form.job_location.errors %}
                                 <div class="invalid-feedback d-block">
@@ -123,7 +123,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.job_url.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.job_url.label }}</label>
                             {{ form.job_url }}
                             {% if form.job_url.errors %}
                                 <div class="invalid-feedback d-block">
@@ -132,7 +132,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-medium text-dark">{{ form.salary_min.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.salary_min.label }}</label>
                             {{ form.salary_min }}
                             {% if form.salary_min.errors %}
                                 <div class="invalid-feedback d-block">
@@ -141,7 +141,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-medium text-dark">{{ form.salary_max.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.salary_max.label }}</label>
                             {{ form.salary_max }}
                             {% if form.salary_max.errors %}
                                 <div class="invalid-feedback d-block">
@@ -152,13 +152,13 @@
                         <div class="col-md-4">
                             <div class="form-check mt-4">
                                 {{ form.remote_allowed }}
-                                <label class="form-check-label fw-medium text-dark" for="{{ form.remote_allowed.id_for_label }}">
+                                <label class="form-check-label fw-medium " for="{{ form.remote_allowed.id_for_label }}">
                                     {{ form.remote_allowed.label }}
                                 </label>
                             </div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-medium text-dark">{{ form.job_description.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.job_description.label }}</label>
                             {{ form.job_description }}
                             {% if form.job_description.errors %}
                                 <div class="invalid-feedback d-block">
@@ -167,7 +167,7 @@
                             {% endif %}
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-medium text-dark">{{ form.job_requirements.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.job_requirements.label }}</label>
                             {{ form.job_requirements }}
                             {% if form.job_requirements.errors %}
                                 <div class="invalid-feedback d-block">
@@ -187,14 +187,14 @@
                             <i class="bi bi-file-text text-info" style="font-size: 1.5rem;"></i>
                         </div>
                         <div>
-                            <h4 class="fw-bold mb-1 text-dark">Application Details</h4>
+                            <h4 class="fw-bold mb-1 ">Application Details</h4>
                             <p class="text-muted mb-0">Set up your application tracking information</p>
                         </div>
                     </div>
                     
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label fw-medium text-dark">{{ form.status.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.status.label }}</label>
                             {{ form.status }}
                             {% if form.status.errors %}
                                 <div class="invalid-feedback d-block">
@@ -203,7 +203,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-medium text-dark">{{ form.priority.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.priority.label }}</label>
                             {{ form.priority }}
                             {% if form.priority.errors %}
                                 <div class="invalid-feedback d-block">
@@ -212,7 +212,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-medium text-dark">{{ form.salary_expectation.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.salary_expectation.label }}</label>
                             {{ form.salary_expectation }}
                             {% if form.salary_expectation.errors %}
                                 <div class="invalid-feedback d-block">
@@ -221,7 +221,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.applied_date.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.applied_date.label }}</label>
                             {{ form.applied_date }}
                             {% if form.applied_date.errors %}
                                 <div class="invalid-feedback d-block">
@@ -230,7 +230,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.deadline.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.deadline.label }}</label>
                             {{ form.deadline }}
                             {% if form.deadline.errors %}
                                 <div class="invalid-feedback d-block">
@@ -250,14 +250,14 @@
                             <i class="bi bi-people text-warning" style="font-size: 1.5rem;"></i>
                         </div>
                         <div>
-                            <h4 class="fw-bold mb-1 text-dark">Contact Information</h4>
+                            <h4 class="fw-bold mb-1 ">Contact Information</h4>
                             <p class="text-muted mb-0">HR and recruiter contact details</p>
                         </div>
                     </div>
                     
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label fw-medium text-dark">{{ form.hr_name.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.hr_name.label }}</label>
                             {{ form.hr_name }}
                             {% if form.hr_name.errors %}
                                 <div class="invalid-feedback d-block">
@@ -266,7 +266,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-medium text-dark">{{ form.hr_email.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.hr_email.label }}</label>
                             {{ form.hr_email }}
                             {% if form.hr_email.errors %}
                                 <div class="invalid-feedback d-block">
@@ -275,7 +275,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-medium text-dark">{{ form.hr_phone.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.hr_phone.label }}</label>
                             {{ form.hr_phone }}
                             {% if form.hr_phone.errors %}
                                 <div class="invalid-feedback d-block">
@@ -284,7 +284,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.recruiter_name.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.recruiter_name.label }}</label>
                             {{ form.recruiter_name }}
                             {% if form.recruiter_name.errors %}
                                 <div class="invalid-feedback d-block">
@@ -293,7 +293,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.recruiter_email.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.recruiter_email.label }}</label>
                             {{ form.recruiter_email }}
                             {% if form.recruiter_email.errors %}
                                 <div class="invalid-feedback d-block">
@@ -313,14 +313,14 @@
                             <i class="bi bi-file-earmark text-secondary" style="font-size: 1.5rem;"></i>
                         </div>
                         <div>
-                            <h4 class="fw-bold mb-1 text-dark">Documents</h4>
+                            <h4 class="fw-bold mb-1 ">Documents</h4>
                             <p class="text-muted mb-0">Select your resume and cover letter</p>
                         </div>
                     </div>
                     
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.resume.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.resume.label }}</label>
                             {{ form.resume }}
                             {% if form.resume.errors %}
                                 <div class="invalid-feedback d-block">
@@ -332,7 +332,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-dark">{{ form.cover_letter.label }}</label>
+                            <label class="form-label fw-medium ">{{ form.cover_letter.label }}</label>
                             {{ form.cover_letter }}
                             {% if form.cover_letter.errors %}
                                 <div class="invalid-feedback d-block">
@@ -352,10 +352,10 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-3">
                         <div class="bg-dark bg-opacity-10 rounded-3 p-3 me-3">
-                            <i class="bi bi-chat-text text-dark" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-chat-text " style="font-size: 1.5rem;"></i>
                         </div>
                         <div>
-                            <h4 class="fw-bold mb-1 text-dark">Additional Notes</h4>
+                            <h4 class="fw-bold mb-1 ">Additional Notes</h4>
                             <p class="text-muted mb-0">Any additional information about this application</p>
                         </div>
                     </div>

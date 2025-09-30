@@ -3,51 +3,145 @@
 {% block title %}Dashboard - JobTracker Pro{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-5">
-    <div>
-        <h1 class="display-6 fw-bold text-dark mb-2">Welcome back! 👋</h1>
-        <p class="text-muted mb-0">Here's what's happening with your job applications today.</p>
-    </div>
-    <div class="d-flex gap-2">
-        <div class="dropdown">
-            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-plus-circle me-2"></i>New Application
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'jobs:application_create' %}">
-                    <i class="bi bi-briefcase me-2"></i>Use Existing Company
-                </a></li>
-                <li><a class="dropdown-item" href="{% url 'jobs:application_create_with_company' %}">
-                    <i class="bi bi-building-add me-2"></i>Create New Company
-                </a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="{% url 'jobs:company_list' %}">
-                    <i class="bi bi-building me-2"></i>Manage Companies
-                </a></li>
-            </ul>
+<!-- Hero Section -->
+<div class="row align-items-center mb-5">
+    <div class="col-lg-6">
+        <div class="hero-content">
+            <h1 class="display-4 fw-bold mb-3">
+                Welcome back! 
+                <span class="text-primary">👋</span>
+            </h1>
+            <p class="lead text-secondary mb-4">
+                Here's what's happening with your job applications today. Stay on top of your career journey.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-primary btn-lg shadow-sm" type="button" 
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-plus-circle me-2"></i>New Application
+                        <i class="bi bi-chevron-down ms-1"></i>
+                    </button>
+                    <ul class="dropdown-menu shadow-lg border-0">
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'jobs:application_create' %}">
+                                <i class="bi bi-briefcase me-2 text-primary"></i>Use Existing Company
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'jobs:application_create_with_company' %}">
+                                <i class="bi bi-building-add me-2 text-success"></i>Create New Company
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-2"></li>
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'jobs:company_list' %}">
+                                <i class="bi bi-building me-2 text-info"></i>Manage Companies
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <a href="{% url 'jobs:document_upload' %}" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-cloud-upload me-2"></i>Upload Document
+                </a>
+            </div>
         </div>
-        <a href="{% url 'jobs:document_upload' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-cloud-upload me-2"></i>Upload Document
-        </a>
+    </div>
+    <div class="col-lg-6 text-center d-none d-lg-block">
+        <div class="hero-graphic">
+            <div class="position-relative">
+                <div class="hero-circle-1"></div>
+                <div class="hero-circle-2"></div>
+                <div class="hero-icon">
+                    <i class="bi bi-graph-up-arrow display-1 text-primary"></i>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Statistics Cards -->
 <div class="row g-4 mb-5">
     <div class="col-lg-3 col-md-6">
-        <div class="card stats-card text-white h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-            <div class="card-body p-4">
+        <div class="card stats-card h-100 position-relative overflow-hidden">
+            <div class="stats-gradient stats-gradient-primary"></div>
+            <div class="card-body p-4 position-relative">
                 <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <p class="card-text mb-2 opacity-75">Total Applications</p>
-                        <h2 class="card-title display-6 fw-bold mb-0">{{ total_applications }}</h2>
-                        <small class="opacity-75">
-                            <i class="bi bi-trending-up me-1"></i>All time
-                        </small>
+                    <div class="flex-grow-1">
+                        <div class="stats-icon mb-3">
+                            <i class="bi bi-briefcase-fill"></i>
+                        </div>
+                        <h3 class="display-6 fw-bold mb-1">{{ total_applications }}</h3>
+                        <p class="text-secondary mb-2">Total Applications</p>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-trending-up text-success me-1"></i>
+                            <small class="text-success">All time</small>
+                        </div>
                     </div>
-                    <div class="opacity-50">
-                        <i class="bi bi-briefcase-fill" style="font-size: 3rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card h-100 position-relative overflow-hidden">
+            <div class="stats-gradient stats-gradient-warning"></div>
+            <div class="card-body p-4 position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="stats-icon mb-3">
+                            <i class="bi bi-clock-fill"></i>
+                        </div>
+                        <h3 class="display-6 fw-bold mb-1">{{ pending_applications }}</h3>
+                        <p class="text-secondary mb-2">Pending Applications</p>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-hourglass-split text-warning me-1"></i>
+                            <small class="text-warning">Awaiting response</small>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card h-100 position-relative overflow-hidden">
+            <div class="stats-gradient stats-gradient-info"></div>
+            <div class="card-body p-4 position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="stats-icon mb-3">
+                            <i class="bi bi-chat-dots-fill"></i>
+                        </div>
+                        <h3 class="display-6 fw-bold mb-1">{{ interview_applications }}</h3>
+                        <p class="text-secondary mb-2">In Interview Process</p>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-people text-info me-1"></i>
+                            <small class="text-info">Active interviews</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card h-100 position-relative overflow-hidden">
+            <div class="stats-gradient stats-gradient-success"></div>
+            <div class="card-body p-4 position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="stats-icon mb-3">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h3 class="display-6 fw-bold mb-1">{{ recent_applications|length }}</h3>
+                        <p class="text-secondary mb-2">This Month</p>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-calendar-check text-success me-1"></i>
+                            <small class="text-success">New applications</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                 </div>
             </div>
         </div>
@@ -121,73 +215,80 @@
                     View All <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 {% if recent_applications %}
-                    <div class="list-group list-group-flush">
+                    <div class="application-list">
                         {% for application in recent_applications %}
-                        <div class="list-group-item border-0 px-0 py-3">
-                            <div class="d-flex justify-content-between align-items-start">
+                        <div class="application-item">
+                            <div class="d-flex align-items-start">
+                                <div class="company-avatar me-3">
+                                    <i class="bi bi-building"></i>
+                                </div>
                                 <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="me-3">
-                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-building text-primary"></i>
-                                            </div>
-                                        </div>
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
                                         <div>
-                                            <h6 class="mb-1">
-                                                <a href="{% url 'jobs:application_detail' application.pk %}" class="text-decoration-none fw-bold">
+                                            <h6 class="mb-1 fw-semibold">
+                                                <a href="{% url 'jobs:application_detail' application.pk %}" 
+                                                   class="text-decoration-none">
                                                     {{ application.position.title }}
                                                 </a>
-                                            </h6> 
-                                            <p class="text-muted mb-0 small">{{ application.position.company.name }}</p>
+                                            </h6>
+                                            <p class="text-secondary mb-0 small">{{ application.position.company.name }}</p>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-ghost" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'jobs:application_detail' application.pk %}">
+                                                        <i class="bi bi-eye me-2"></i>View Details
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'jobs:application_edit' application.pk %}">
+                                                        <i class="bi bi-pencil me-2"></i>Edit
+                                                    </a>
+                                                </li>
+                                                {% if not application.email_sent %}
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'jobs:send_application_email' application.pk %}">
+                                                        <i class="bi bi-envelope me-2"></i>Send Email
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
                                         </div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span class="badge rounded-pill 
+                                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                                        <span class="badge 
                                             {% if application.status == 'APPLIED' %}bg-primary{% elif application.status == 'PHONE_SCREEN' or application.status == 'TECHNICAL_INTERVIEW' or application.status == 'ONSITE_INTERVIEW' %}bg-info{% elif application.status == 'OFFER_RECEIVED' %}bg-success{% elif application.status == 'REJECTED' %}bg-danger{% else %}bg-secondary{% endif %}">
                                             {{ application.get_status_display }}
                                         </span>
                                         {% if application.email_sent %}
-                                            <small class="text-success">
-                                                <i class="bi bi-check-circle-fill me-1"></i>Sent
+                                            <small class="text-success d-flex align-items-center">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Email Sent
                                             </small>
                                         {% endif %}
-                                        <small class="text-muted">
+                                        <small class="text-tertiary d-flex align-items-center">
                                             <i class="bi bi-calendar3 me-1"></i>
                                             {{ application.applied_date|date:"M d"|default:"Not set" }}
                                         </small>
                                     </div>
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="bi bi-three-dots"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="{% url 'jobs:application_detail' application.pk %}">
-                                            <i class="bi bi-eye me-2"></i>View Details
-                                        </a></li>
-                                        <li><a class="dropdown-item" href="{% url 'jobs:application_edit' application.pk %}">
-                                            <i class="bi bi-pencil me-2"></i>Edit
-                                        </a></li>
-                                        {% if not application.email_sent %}
-                                        <li><a class="dropdown-item" href="{% url 'jobs:send_application_email' application.pk %}">
-                                            <i class="bi bi-envelope me-2"></i>Send Email
-                                        </a></li>
-                                        {% endif %}
-                                    </ul>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="text-center py-5">
-                        <div class="mb-4">
-                            <i class="bi bi-inbox display-1 text-muted opacity-50"></i>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-inbox"></i>
                         </div>
-                        <h5 class="text-muted mb-3">No applications yet</h5>
-                        <p class="text-muted mb-4">Start your job search journey by creating your first application.</p>
+                        <h5 class="text-secondary mb-3">No applications yet</h5>
+                        <p class="text-tertiary mb-4">
+                            Start your job search journey by creating your first application.
+                        </p>
                         <a href="{% url 'jobs:application_create' %}" class="btn btn-primary">
                             <i class="bi bi-plus-circle me-2"></i>Create First Application
                         </a>
@@ -199,50 +300,55 @@
 
     <!-- Upcoming Interviews -->
     <div class="col-lg-4">
-        <div class="card border-0 h-100">
-            <div class="card-header bg-transparent border-bottom-0 py-3">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center py-4 border-0">
                 <div>
-                    <h5 class="mb-1 fw-bold">📅 Upcoming Interviews</h5>
-                    <small class="text-muted">Your scheduled interviews</small>
+                    <h5 class="card-title mb-1 fw-bold d-flex align-items-center">
+                        <i class="bi bi-calendar-event me-2 text-info"></i>
+                        Upcoming Interviews
+                    </h5>
+                    <p class="text-secondary small mb-0">Your scheduled interviews</p>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 {% if upcoming_interviews %}
-                    {% for interview in upcoming_interviews %}
-                    <div class="d-flex align-items-start mb-4 p-3 bg-light bg-opacity-50 rounded-3">
-                        <div class="me-3">
-                            <div class="bg-info bg-opacity-10 rounded-circle p-2">
-                                <i class="bi bi-calendar-event text-info"></i>
+                    <div class="interview-list">
+                        {% for interview in upcoming_interviews %}
+                        <div class="interview-item">
+                            <div class="d-flex align-items-start">
+                                <div class="company-avatar me-3">
+                                    <i class="bi bi-calendar-event"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-semibold">{{ interview.application.position.title }}</h6>
+                                    <p class="text-secondary mb-2 small">{{ interview.application.position.company.name }}</p>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <small class="text-info fw-medium d-flex align-items-center">
+                                            <i class="bi bi-clock me-1"></i>
+                                            {{ interview.scheduled_date|date:"M d, H:i" }}
+                                        </small>
+                                        <span class="badge bg-info">
+                                            Round {{ interview.round_number }}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1 fw-bold">{{ interview.application.position.title }}</h6>
-                            <p class="text-muted mb-2 small">{{ interview.application.position.company.name }}</p>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <small class="text-info fw-medium">
-                                    <i class="bi bi-clock me-1"></i>
-                                    {{ interview.scheduled_date|date:"M d, H:i" }}
-                                </small>
-                                <span class="badge bg-info bg-opacity-20 text-info rounded-pill">
-                                    Round {{ interview.round_number }}
-                                </span>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                    <div class="text-center mt-3">
-                        <small class="text-muted">
+                    <div class="text-center mt-4">
+                        <small class="text-tertiary d-flex align-items-center justify-content-center">
                             <i class="bi bi-info-circle me-1"></i>
                             Set reminders in your calendar
                         </small>
                     </div>
                 {% else %}
-                    <div class="text-center py-4">
-                        <div class="mb-3">
-                            <i class="bi bi-calendar-check display-4 text-muted opacity-50"></i>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-calendar-check"></i>
                         </div>
-                        <h6 class="text-muted mb-2">No upcoming interviews</h6>
-                        <p class="text-muted small mb-0">
+                        <h6 class="text-secondary mb-2">No upcoming interviews</h6>
+                        <p class="text-tertiary small mb-0">
                             Interviews will appear here when scheduled
                         </p>
                     </div>
@@ -255,32 +361,39 @@
 <!-- Quick Actions -->
 <div class="row g-4 mt-4">
     <div class="col-12">
-        <div class="card border-0">
+        <div class="card">
             <div class="card-body p-4">
-                <h5 class="fw-bold mb-3">🚀 Quick Actions</h5>
+                <div class="d-flex align-items-center mb-4">
+                    <i class="bi bi-lightning-charge-fill me-2 text-warning fs-4"></i>
+                    <h5 class="card-title mb-0 fw-bold">Quick Actions</h5>
+                </div>
                 <div class="row g-3">
-                    <div class="col-md-3">
-                        <a href="{% url 'jobs:company_create' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                            <i class="bi bi-building-add display-6 mb-2"></i>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{% url 'jobs:company_create' %}" class="quick-action-card btn w-100 d-flex flex-column align-items-center justify-content-center text-decoration-none">
+                            <i class="bi bi-building-add fs-1 mb-2 text-primary"></i>
                             <span class="fw-medium">Add Company</span>
+                            <small class="text-tertiary mt-1">Create new company profile</small>
                         </a>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{% url 'jobs:position_create' %}" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                            <i class="bi bi-briefcase-fill display-6 mb-2"></i>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{% url 'jobs:position_create' %}" class="quick-action-card btn w-100 d-flex flex-column align-items-center justify-content-center text-decoration-none">
+                            <i class="bi bi-briefcase-fill fs-1 mb-2 text-success"></i>
                             <span class="fw-medium">Add Position</span>
+                            <small class="text-tertiary mt-1">Create job position</small>
                         </a>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{% url 'jobs:document_upload' %}" class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                            <i class="bi bi-cloud-upload display-6 mb-2"></i>
-                            <span class="fw-medium">Upload Resume</span>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{% url 'jobs:document_upload' %}" class="quick-action-card btn w-100 d-flex flex-column align-items-center justify-content-center text-decoration-none">
+                            <i class="bi bi-cloud-upload fs-1 mb-2 text-info"></i>
+                            <span class="fw-medium">Upload Document</span>
+                            <small class="text-tertiary mt-1">Add resume or cover letter</small>
                         </a>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{% url 'jobs:statistics' %}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                            <i class="bi bi-graph-up display-6 mb-2"></i>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{% url 'jobs:statistics' %}" class="quick-action-card btn w-100 d-flex flex-column align-items-center justify-content-center text-decoration-none">
+                            <i class="bi bi-graph-up fs-1 mb-2 text-warning"></i>
                             <span class="fw-medium">View Analytics</span>
+                            <small class="text-tertiary mt-1">Track your progress</small>
                         </a>
                     </div>
                 </div>
@@ -288,4 +401,191 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section Styles */
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-graphic {
+        position: relative;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .hero-circle-1, .hero-circle-2 {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.1;
+    }
+    
+    .hero-circle-1 {
+        width: 200px;
+        height: 200px;
+        background: var(--gradient-primary);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .hero-circle-2 {
+        width: 150px;
+        height: 150px;
+        background: var(--gradient-secondary);
+        right: 20px;
+        top: 40px;
+        animation: float 6s ease-in-out infinite reverse;
+    }
+    
+    .hero-icon {
+        position: relative;
+        z-index: 3;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    /* Enhanced Stats Cards */
+    .stats-gradient {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.1;
+        transition: var(--transition-normal);
+    }
+    
+    .stats-gradient-primary {
+        background: var(--gradient-primary);
+    }
+    
+    .stats-gradient-success {
+        background: var(--gradient-success);
+    }
+    
+    .stats-gradient-warning {
+        background: var(--gradient-secondary);
+    }
+    
+    .stats-gradient-info {
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-purple) 100%);
+    }
+    
+    .stats-card:hover .stats-gradient {
+        opacity: 0.15;
+    }
+    
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--surface-tertiary);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: var(--accent-primary);
+    }
+    
+    /* Application Cards */
+    .application-item {
+        transition: var(--transition-normal);
+        border-left: 3px solid transparent;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: var(--surface-secondary);
+        border-radius: var(--radius-md);
+    }
+    
+    .application-item:hover {
+        transform: translateX(4px);
+        border-left-color: var(--accent-primary);
+        background: var(--surface-tertiary);
+    }
+    
+    .company-avatar {
+        width: 40px;
+        height: 40px;
+        background: var(--surface-tertiary);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: var(--accent-primary);
+    }
+    
+    /* Quick Actions */
+    .quick-action-card {
+        border: 2px dashed var(--surface-hover);
+        transition: var(--transition-normal);
+        height: 120px;
+    }
+    
+    .quick-action-card:hover {
+        border-color: var(--accent-primary);
+        background: var(--surface-tertiary);
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+    
+    /* Upcoming Interviews */
+    .interview-item {
+        background: var(--surface-tertiary);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid var(--accent-info);
+        transition: var(--transition-fast);
+    }
+    
+    .interview-item:hover {
+        background: var(--surface-hover);
+        transform: translateX(2px);
+    }
+    
+    /* Empty States */
+    .empty-state {
+        padding: 3rem 1rem;
+        text-align: center;
+    }
+    
+    .empty-state-icon {
+        font-size: 4rem;
+        color: var(--text-quaternary);
+        margin-bottom: 1rem;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .hero-graphic {
+            height: 200px;
+        }
+        
+        .hero-circle-1 {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .hero-circle-2 {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .stats-card .display-6 {
+            font-size: 1.75rem;
+        }
+        
+        .quick-action-card {
+            height: 100px;
+        }
+    }
+</style>
 {% endblock %}
