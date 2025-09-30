@@ -1,0 +1,210 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}{{ title|default:"Upload Document" }} - JobTracker Pro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="display-6 fw-bold mb-2 text-dark">📄 {{ title|default:"Upload Document" }}</h1>
+                <p class="text-muted mb-0">Add your resume, cover letter, or other job-related documents</p>
+            </div>
+            <a href="{% url 'jobs:document_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Documents
+            </a>
+        </div>
+
+        <div class="card border-0 mb-4">
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium text-dark">{{ form.name.label }} *</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.name.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Give your document a descriptive name (e.g., "Software Engineer Resume 2025")
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium text-dark">{{ form.document_type.label }} *</label>
+                            {{ form.document_type }}
+                            {% if form.document_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.document_type.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Select the type of document you're uploading
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-medium text-dark">{{ form.file.label }} *</label>
+                            {{ form.file }}
+                            {% if form.file.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.file.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Supported formats: PDF, DOC, DOCX. Maximum file size: 10MB
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-medium text-dark">{{ form.description.label }}</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.description.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Add any additional notes about this document (optional)
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check">
+                                {{ form.is_default }}
+                                <label class="form-check-label fw-medium text-dark" for="{{ form.is_default.id_for_label }}">
+                                    {{ form.is_default.label }}
+                                </label>
+                                {% if form.is_default.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.is_default.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Default documents are automatically selected when creating new applications
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                            <i class="bi bi-cloud-upload me-2"></i>Upload Document
+                        </button>
+                        <a href="{% url 'jobs:document_list' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-x-lg me-1"></i>Cancel
+                        </a>
+                    </div>
+
+                    <!-- Form Validation Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger mt-3" role="alert">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Upload Tips -->
+        <div class="card border-0 bg-light bg-opacity-50">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3 text-dark">💡 Upload Tips</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-file-earmark-pdf text-danger me-2 mt-1"></i>
+                            <div>
+                                <div class="fw-medium text-dark">PDF Format</div>
+                                <small class="text-muted">PDF files maintain formatting and are widely accepted by employers</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-star text-warning me-2 mt-1"></i>
+                            <div>
+                                <div class="fw-medium text-dark">Default Documents</div>
+                                <small class="text-muted">Mark frequently used documents as default for quick access</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-shield-check text-success me-2 mt-1"></i>
+                            <div>
+                                <div class="fw-medium text-dark">File Security</div>
+                                <small class="text-muted">Your documents are stored securely and only accessible to you</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-arrow-clockwise text-info me-2 mt-1"></i>
+                            <div>
+                                <div class="fw-medium text-dark">Version Control</div>
+                                <small class="text-muted">Upload new versions when you update your resume or cover letter</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Bootstrap form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+
+// File input validation and preview
+document.getElementById('{{ form.file.id_for_label }}').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        // Check file size (10MB limit)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File size must be less than 10MB');
+            this.value = '';
+            return;
+        }
+        
+        // Check file type
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please select a PDF, DOC, or DOCX file');
+            this.value = '';
+            return;
+        }
+        
+        // Auto-fill document name if empty
+        const nameField = document.getElementById('{{ form.name.id_for_label }}');
+        if (!nameField.value) {
+            const fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
+            nameField.value = fileName;
+        }
+    }
+});
+</script>
+{% endblock %}

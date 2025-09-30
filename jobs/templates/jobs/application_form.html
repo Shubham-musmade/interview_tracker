@@ -1,0 +1,194 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}{{ title }} - JobTracker Pro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-8 col-lg-10">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="display-6 fw-bold mb-2">{{ title }}</h1>
+            <p class="text-muted">Fill in the details for your job application</p>
+        </div>
+
+        <div class="card border-0">
+            <div class="card-body p-5">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Position and Basic Info Section -->
+                    <div class="mb-5">
+                        <h5 class="fw-bold mb-3 text-primary">
+                            <i class="bi bi-briefcase-fill me-2"></i>Position Details
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.position.id_for_label }}" class="form-label fw-medium">
+                                    Job Position <span class="text-danger">*</span>
+                                </label>
+                                {{ form.position }}
+                                {% if form.position.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.position.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Don't see your position? <a href="{% url 'jobs:position_create' %}">Add a new position</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label fw-medium">Application Status</label>
+                                {{ form.status }}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label fw-medium">Priority Level</label>
+                                {{ form.priority }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Section -->
+                    <div class="mb-5">
+                        <h5 class="fw-bold mb-3 text-success">
+                            <i class="bi bi-person-lines-fill me-2"></i>Contact Information
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.hr_email.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-envelope me-1"></i>HR Email
+                                </label>
+                                {{ form.hr_email }}
+                                <div class="form-text">Primary contact for application</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.hr_name.id_for_label }}" class="form-label fw-medium">HR Contact Name</label>
+                                {{ form.hr_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.hr_phone.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-telephone me-1"></i>HR Phone Number
+                                </label>
+                                {{ form.hr_phone }}
+                                <div class="form-text">HR contact phone (optional)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.recruiter_email.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-envelope me-1"></i>Recruiter Email
+                                </label>
+                                {{ form.recruiter_email }}
+                                <div class="form-text">Secondary contact (optional)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.recruiter_name.id_for_label }}" class="form-label fw-medium">Recruiter Name</label>
+                                {{ form.recruiter_name }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline and Documents Section -->
+                    <div class="mb-5">
+                        <h5 class="fw-bold mb-3 text-info">
+                            <i class="bi bi-clock-history me-2"></i>Timeline & Documents
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="{{ form.applied_date.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-calendar-check me-1"></i>Applied Date
+                                </label>
+                                {{ form.applied_date }}
+                                <div class="form-text">When did you submit your application?</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="{{ form.deadline.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-calendar-x me-1"></i>Application Deadline
+                                </label>
+                                {{ form.deadline }}
+                                <div class="form-text">Last date to apply</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="{{ form.salary_expectation.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-currency-dollar me-1"></i>Salary Expectation
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    {{ form.salary_expectation }}
+                                </div>
+                                <div class="form-text">Annual expected salary</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents Section -->
+                    <div class="mb-5">
+                        <h5 class="fw-bold mb-3 text-warning">
+                            <i class="bi bi-file-earmark-text me-2"></i>Application Documents
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.resume.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-file-person me-1"></i>Resume
+                                </label>
+                                {{ form.resume }}
+                                <div class="form-text">
+                                    <i class="bi bi-upload me-1"></i>
+                                    Need to upload? <a href="{% url 'jobs:document_upload' %}" class="text-decoration-none">Add new resume</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.cover_letter.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-file-text me-1"></i>Cover Letter
+                                </label>
+                                {{ form.cover_letter }}
+                                <div class="form-text">
+                                    <i class="bi bi-upload me-1"></i>
+                                    Need to upload? <a href="{% url 'jobs:document_upload' %}" class="text-decoration-none">Add new cover letter</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="mb-5">
+                        <h5 class="fw-bold mb-3 text-secondary">
+                            <i class="bi bi-chat-left-text me-2"></i>Additional Notes
+                        </h5>
+                        <label for="{{ form.notes.id_for_label }}" class="form-label fw-medium">Personal Notes</label>
+                        {{ form.notes }}
+                        <div class="form-text">Add any additional information, requirements, or reminders</div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                        <a href="{% url 'jobs:application_list' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-check-circle me-2"></i>Save Application
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Helper Alert -->
+        {% if not form.position.queryset %}
+            <div class="alert alert-info border-0 mt-4">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                    <div>
+                        <h6 class="alert-heading mb-1">Setup Required</h6>
+                        <p class="mb-2">You need to add companies and job positions before creating applications.</p>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'jobs:company_create' %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-building me-1"></i>Add Company
+                            </a>
+                            <a href="{% url 'jobs:position_create' %}" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-briefcase me-1"></i>Add Position
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

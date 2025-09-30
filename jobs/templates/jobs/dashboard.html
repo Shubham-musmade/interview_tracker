@@ -1,0 +1,291 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}Dashboard - JobTracker Pro{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+        <h1 class="display-6 fw-bold text-dark mb-2">Welcome back! 👋</h1>
+        <p class="text-muted mb-0">Here's what's happening with your job applications today.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <div class="dropdown">
+            <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-plus-circle me-2"></i>New Application
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'jobs:application_create' %}">
+                    <i class="bi bi-briefcase me-2"></i>Use Existing Company
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'jobs:application_create_with_company' %}">
+                    <i class="bi bi-building-add me-2"></i>Create New Company
+                </a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'jobs:company_list' %}">
+                    <i class="bi bi-building me-2"></i>Manage Companies
+                </a></li>
+            </ul>
+        </div>
+        <a href="{% url 'jobs:document_upload' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-cloud-upload me-2"></i>Upload Document
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card text-white h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="card-text mb-2 opacity-75">Total Applications</p>
+                        <h2 class="card-title display-6 fw-bold mb-0">{{ total_applications }}</h2>
+                        <small class="opacity-75">
+                            <i class="bi bi-trending-up me-1"></i>All time
+                        </small>
+                    </div>
+                    <div class="opacity-50">
+                        <i class="bi bi-briefcase-fill" style="font-size: 3rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card text-white h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="card-text mb-2 opacity-75">Pending Review</p>
+                        <h2 class="card-title display-6 fw-bold mb-0">{{ pending_applications }}</h2>
+                        <small class="opacity-75">
+                            <i class="bi bi-clock me-1"></i>Awaiting response
+                        </small>
+                    </div>
+                    <div class="opacity-50">
+                        <i class="bi bi-hourglass-split" style="font-size: 3rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card text-white h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="card-text mb-2 opacity-75">In Interviews</p>
+                        <h2 class="card-title display-6 fw-bold mb-0">{{ interview_applications }}</h2>
+                        <small class="opacity-75">
+                            <i class="bi bi-people me-1"></i>Active process
+                        </small>
+                    </div>
+                    <div class="opacity-50">
+                        <i class="bi bi-chat-dots-fill" style="font-size: 3rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card text-white h-100" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="card-text mb-2 opacity-75">This Month</p>
+                        <h2 class="card-title display-6 fw-bold mb-0">{{ recent_applications|length }}</h2>
+                        <small class="opacity-75">
+                            <i class="bi bi-calendar-check me-1"></i>New applications
+                        </small>
+                    </div>
+                    <div class="opacity-50">
+                        <i class="bi bi-graph-up-arrow" style="font-size: 3rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Applications -->
+    <div class="col-lg-8">
+        <div class="card border-0 h-100">
+            <div class="card-header bg-transparent border-bottom-0 d-flex justify-content-between align-items-center py-3">
+                <div>
+                    <h5 class="mb-1 fw-bold">📋 Recent Applications</h5>
+                    <small class="text-muted">Your latest job applications</small>
+                </div>
+                <a href="{% url 'jobs:application_list' %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                    View All <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_applications %}
+                    <div class="list-group list-group-flush">
+                        {% for application in recent_applications %}
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="me-3">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                                                <i class="bi bi-building text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <a href="{% url 'jobs:application_detail' application.pk %}" class="text-decoration-none fw-bold">
+                                                    {{ application.position.title }}
+                                                </a>
+                                            </h6> 
+                                            <p class="text-muted mb-0 small">{{ application.position.company.name }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="badge rounded-pill 
+                                            {% if application.status == 'APPLIED' %}bg-primary{% elif application.status == 'PHONE_SCREEN' or application.status == 'TECHNICAL_INTERVIEW' or application.status == 'ONSITE_INTERVIEW' %}bg-info{% elif application.status == 'OFFER_RECEIVED' %}bg-success{% elif application.status == 'REJECTED' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                            {{ application.get_status_display }}
+                                        </span>
+                                        {% if application.email_sent %}
+                                            <small class="text-success">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Sent
+                                            </small>
+                                        {% endif %}
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar3 me-1"></i>
+                                            {{ application.applied_date|date:"M d"|default:"Not set" }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="{% url 'jobs:application_detail' application.pk %}">
+                                            <i class="bi bi-eye me-2"></i>View Details
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{% url 'jobs:application_edit' application.pk %}">
+                                            <i class="bi bi-pencil me-2"></i>Edit
+                                        </a></li>
+                                        {% if not application.email_sent %}
+                                        <li><a class="dropdown-item" href="{% url 'jobs:send_application_email' application.pk %}">
+                                            <i class="bi bi-envelope me-2"></i>Send Email
+                                        </a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <i class="bi bi-inbox display-1 text-muted opacity-50"></i>
+                        </div>
+                        <h5 class="text-muted mb-3">No applications yet</h5>
+                        <p class="text-muted mb-4">Start your job search journey by creating your first application.</p>
+                        <a href="{% url 'jobs:application_create' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>Create First Application
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Interviews -->
+    <div class="col-lg-4">
+        <div class="card border-0 h-100">
+            <div class="card-header bg-transparent border-bottom-0 py-3">
+                <div>
+                    <h5 class="mb-1 fw-bold">📅 Upcoming Interviews</h5>
+                    <small class="text-muted">Your scheduled interviews</small>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if upcoming_interviews %}
+                    {% for interview in upcoming_interviews %}
+                    <div class="d-flex align-items-start mb-4 p-3 bg-light bg-opacity-50 rounded-3">
+                        <div class="me-3">
+                            <div class="bg-info bg-opacity-10 rounded-circle p-2">
+                                <i class="bi bi-calendar-event text-info"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 fw-bold">{{ interview.application.position.title }}</h6>
+                            <p class="text-muted mb-2 small">{{ interview.application.position.company.name }}</p>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <small class="text-info fw-medium">
+                                    <i class="bi bi-clock me-1"></i>
+                                    {{ interview.scheduled_date|date:"M d, H:i" }}
+                                </small>
+                                <span class="badge bg-info bg-opacity-20 text-info rounded-pill">
+                                    Round {{ interview.round_number }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Set reminders in your calendar
+                        </small>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <div class="mb-3">
+                            <i class="bi bi-calendar-check display-4 text-muted opacity-50"></i>
+                        </div>
+                        <h6 class="text-muted mb-2">No upcoming interviews</h6>
+                        <p class="text-muted small mb-0">
+                            Interviews will appear here when scheduled
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-4 mt-4">
+    <div class="col-12">
+        <div class="card border-0">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">🚀 Quick Actions</h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="{% url 'jobs:company_create' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="bi bi-building-add display-6 mb-2"></i>
+                            <span class="fw-medium">Add Company</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'jobs:position_create' %}" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="bi bi-briefcase-fill display-6 mb-2"></i>
+                            <span class="fw-medium">Add Position</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'jobs:document_upload' %}" class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="bi bi-cloud-upload display-6 mb-2"></i>
+                            <span class="fw-medium">Upload Resume</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'jobs:statistics' %}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="bi bi-graph-up display-6 mb-2"></i>
+                            <span class="fw-medium">View Analytics</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

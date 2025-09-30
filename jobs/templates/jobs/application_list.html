@@ -1,0 +1,239 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}Applications - JobTracker Pro{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+        <h1 class="display-6 fw-bold mb-2">📋 My Applications</h1>
+        <p class="text-muted mb-0">Manage and track all your job applications</p>
+    </div>
+    <div class="dropdown">
+        <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-plus-circle me-2"></i>New Application
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'jobs:application_create' %}">
+                <i class="bi bi-briefcase me-2"></i>Use Existing Company
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'jobs:application_create_with_company' %}">
+                <i class="bi bi-building-add me-2"></i>Create New Company
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'jobs:company_list' %}">
+                <i class="bi bi-building me-2"></i>Manage Companies
+            </a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="card border-0 mb-4">
+    <div class="card-body p-4">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label fw-medium">🔍 Search Applications</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0" name="search" 
+                           placeholder="Search by position, company, or notes..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-medium">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    {% for status_code, status_name in status_choices %}
+                        <option value="{{ status_code }}" {% if status_filter == status_code %}selected{% endif %}>
+                            {{ status_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-medium">Priority</label>
+                <select name="priority" class="form-select">
+                    <option value="">All Priorities</option>
+                    {% for priority_code, priority_name in priority_choices %}
+                        <option value="{{ priority_code }}" {% if priority_filter == priority_code %}selected{% endif %}>
+                            {{ priority_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i>Apply Filters
+                </button>
+            </div>
+            <div class="col-md-1">
+                <a href="{% url 'jobs:application_list' %}" class="btn btn-outline-secondary w-100" title="Clear filters">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Applications Grid -->
+{% if page_obj %}
+    <div class="row g-4">
+        {% for application in page_obj %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 h-100 application-card">
+                <div class="card-body p-4">
+                    <!-- Header with Priority Badge -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title fw-bold mb-1">{{ application.position.title }}</h5>
+                            <p class="text-muted mb-0">{{ application.position.company.name }}</p>
+                        </div>
+                        <span class="badge rounded-pill ms-2
+                            {% if application.priority == 'HIGH' %}bg-danger{% elif application.priority == 'MEDIUM' %}bg-warning{% else %}bg-secondary{% endif %}">
+                            {{ application.get_priority_display }}
+                        </span>
+                    </div>
+
+                    <!-- Location and Details -->
+                    <div class="mb-3">
+                        <small class="text-muted d-flex align-items-center">
+                            <i class="bi bi-geo-alt me-1"></i>
+                            {{ application.position.location|default:"Remote Work" }}
+                        </small>
+                        {% if application.position.employment_type %}
+                        <small class="text-muted d-flex align-items-center mt-1">
+                            <i class="bi bi-briefcase me-1"></i>
+                            {{ application.position.get_employment_type_display }}
+                        </small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Status and Email Status -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge rounded-pill px-3 py-2
+                            {% if application.status == 'APPLIED' %}bg-primary{% elif application.status == 'PHONE_SCREEN' or application.status == 'TECHNICAL_INTERVIEW' or application.status == 'ONSITE_INTERVIEW' %}bg-info{% elif application.status == 'OFFER_RECEIVED' %}bg-success{% elif application.status == 'REJECTED' %}bg-danger{% else %}bg-secondary{% endif %}">
+                            {{ application.get_status_display }}
+                        </span>
+                        {% if application.email_sent %}
+                            <span class="badge bg-success bg-opacity-20 text-success rounded-pill px-2 py-1">
+                                <i class="bi bi-check-circle-fill me-1"></i>Sent
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Application Date -->
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            {% if application.applied_date %}
+                                Applied: {{ application.applied_date|date:"M d, Y" }}
+                            {% else %}
+                                <span class="text-warning">Not applied yet</span>
+                            {% endif %}
+                        </small>
+                    </div>
+
+                    <!-- Progress Notes -->
+                    {% if application.notes %}
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-note-text me-1"></i>
+                            {{ application.notes|truncatechars:50 }}
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Action Footer -->
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <div class="d-grid gap-2">
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'jobs:application_detail' application.pk %}" 
+                               class="btn btn-outline-primary">
+                                <i class="bi bi-eye me-1"></i>Details
+                            </a>
+                            <a href="{% url 'jobs:application_edit' application.pk %}" 
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                            {% if not application.email_sent %}
+                            <a href="{% url 'jobs:send_application_email' application.pk %}" 
+                               class="btn btn-success">
+                                <i class="bi bi-send me-1"></i>Send
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Applications pagination">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">Previous</a>
+                </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-inbox display-1 text-muted opacity-50"></i>
+        </div>
+        <h3 class="fw-bold mb-3">No Applications Found</h3>
+        {% if search_query or status_filter or priority_filter %}
+            <p class="text-muted mb-4">
+                No applications match your current filters. Try adjusting your search criteria.
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+                <a href="{% url 'jobs:application_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Clear Filters
+                </a>
+                <a href="{% url 'jobs:application_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>New Application
+                </a>
+            </div>
+        {% else %}
+            <p class="text-muted mb-4">
+                Start your job search journey by creating your first application.
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+                <a href="{% url 'jobs:application_create' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-circle me-2"></i>Create Your First Application
+                </a>
+                <a href="{% url 'jobs:company_create' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-building me-2"></i>Add Company First
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

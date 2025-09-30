@@ -1,0 +1,307 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}Companies - JobTracker Pro{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+        <h1 class="display-6 fw-bold mb-2">🏢 Companies</h1>
+        <p class="text-muted mb-0">Manage companies you're interested in or have applied to</p>
+    </div>
+    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
+        <i class="bi bi-building-add me-2"></i>Add Company
+    </button>
+</div>
+
+<!-- Company Search -->
+<div class="card border-0 mb-4">
+    <div class="card-body p-4">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-medium">🔍 Search Companies</label>
+                <input type="text" name="search" class="form-control" placeholder="Company name, industry, or location" value="{{ search_query }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">🏭 Industry</label>
+                <select name="industry" class="form-select">
+                    <option value="">All Industries</option>
+                    <option value="Technology" {% if industry_filter == 'Technology' %}selected{% endif %}>Technology</option>
+                    <option value="Finance" {% if industry_filter == 'Finance' %}selected{% endif %}>Finance</option>
+                    <option value="Healthcare" {% if industry_filter == 'Healthcare' %}selected{% endif %}>Healthcare</option>
+                    <option value="Education" {% if industry_filter == 'Education' %}selected{% endif %}>Education</option>
+                    <option value="Manufacturing" {% if industry_filter == 'Manufacturing' %}selected{% endif %}>Manufacturing</option>
+                    <option value="Retail" {% if industry_filter == 'Retail' %}selected{% endif %}>Retail</option>
+                    <option value="Other" {% if industry_filter == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-1"></i>Search
+                </button>
+            </div>
+            <div class="col-md-1">
+                <a href="{% url 'jobs:company_list' %}" class="btn btn-outline-secondary w-100" title="Clear filters">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Companies Grid -->
+{% if page_obj %}
+    <div class="row g-4">
+        {% for company in page_obj %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 h-100">
+                <div class="card-body p-4">
+                    <!-- Company Header -->
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="me-3">
+                            <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-building text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="card-title fw-bold mb-1">{{ company.name }}</h5>
+                            {% if company.industry %}
+                            <span class="badge rounded-pill bg-secondary bg-opacity-20 text-secondary">
+                                {{ company.industry }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Company Details -->
+                    {% if company.website %}
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            <i class="bi bi-globe me-1"></i>
+                            <a href="{{ company.website }}" target="_blank" class="text-decoration-none">
+                                {{ company.website|slice:":30" }}{% if company.website|length > 30 %}...{% endif %}
+                            </a>
+                        </small>
+                    </div>
+                    {% endif %}
+
+                    {% if company.location %}
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            <i class="bi bi-geo-alt me-1"></i>
+                            {{ company.location }}
+                        </small>
+                    </div>
+                    {% endif %}
+
+                    <!-- Description -->
+                    {% if company.description %}
+                    <p class="text-muted mb-3">{{ company.description|truncatechars:100 }}</p>
+                    {% endif %}
+
+                    <!-- Application Stats -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="text-center p-2 rounded-2 bg-light bg-opacity-50">
+                                <div class="fw-bold text-primary">{{ company.jobapplication_set.count }}</div>
+                                <small class="text-muted">Applications</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center p-2 rounded-2 bg-light bg-opacity-50">
+                                <div class="fw-bold text-success">{{ company.jobapplication_set.count }}</div>
+                                <small class="text-muted">Positions</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Footer -->
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'jobs:application_list' %}?company={{ company.id }}" class="btn btn-outline-primary flex-fill">
+                            <i class="bi bi-briefcase me-1"></i>Applications
+                        </a>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editCompanyModal{{ company.id }}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteCompanyModal{{ company.id }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Company Modal -->
+        <div class="modal fade" id="editCompanyModal{{ company.id }}" tabindex="-1" aria-labelledby="editCompanyModalLabel{{ company.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editCompanyModalLabel{{ company.id }}">Edit Company</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="post" action="{% url 'jobs:company_edit' company.pk %}">
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Company Name</label>
+                                <input type="text" name="name" class="form-control" value="{{ company.name }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Industry</label>
+                                <select name="industry" class="form-select">
+                                    <option value="">Select Industry</option>
+                                    <option value="Technology" {% if company.industry == 'Technology' %}selected{% endif %}>Technology</option>
+                                    <option value="Finance" {% if company.industry == 'Finance' %}selected{% endif %}>Finance</option>
+                                    <option value="Healthcare" {% if company.industry == 'Healthcare' %}selected{% endif %}>Healthcare</option>
+                                    <option value="Education" {% if company.industry == 'Education' %}selected{% endif %}>Education</option>
+                                    <option value="Manufacturing" {% if company.industry == 'Manufacturing' %}selected{% endif %}>Manufacturing</option>
+                                    <option value="Retail" {% if company.industry == 'Retail' %}selected{% endif %}>Retail</option>
+                                    <option value="Other" {% if company.industry == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Website</label>
+                                <input type="url" name="website" class="form-control" value="{{ company.website }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Location</label>
+                                <input type="text" name="location" class="form-control" value="{{ company.location }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" class="form-control" rows="3">{{ company.description }}</textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Company Modal -->
+        <div class="modal fade" id="deleteCompanyModal{{ company.id }}" tabindex="-1" aria-labelledby="deleteCompanyModalLabel{{ company.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteCompanyModalLabel{{ company.id }}">Delete Company</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete <strong>{{ company.name }}</strong>?</p>
+                        <p class="text-muted small">This action cannot be undone. All associated job applications will be affected.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form method="post" action="{% url 'jobs:company_delete' company.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete Company</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Companies pagination" class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if industry_filter %}&industry={{ industry_filter }}{% endif %}">Previous</a>
+                </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if industry_filter %}&industry={{ industry_filter }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if industry_filter %}&industry={{ industry_filter }}{% endif %}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-building-x display-1 text-muted opacity-50"></i>
+        </div>
+        <h3 class="fw-bold mb-3 text-dark">No Companies Found</h3>
+        <p class="text-muted mb-4">
+            Add your first company to start tracking job opportunities.
+        </p>
+        <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
+            <i class="bi bi-building-add me-2"></i>Add Your First Company
+        </button>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- Add Company Modal -->
+<div class="modal fade" id="addCompanyModal" tabindex="-1" aria-labelledby="addCompanyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCompanyModalLabel">Add New Company</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'jobs:company_add' %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Company Name *</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Industry</label>
+                        <select name="industry" class="form-select">
+                            <option value="">Select Industry</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Education">Education</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Retail">Retail</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Website</label>
+                        <input type="url" name="website" class="form-control" placeholder="https://example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" placeholder="City, State/Country">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Brief description about the company..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Company</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
