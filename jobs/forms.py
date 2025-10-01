@@ -43,11 +43,12 @@ class CompanyForm(forms.ModelForm):
 class JobApplicationForm(forms.ModelForm):
     class Meta:
         model = JobApplication
-        fields = ['position', 'status', 'priority', 'application_platform', 'platform_url',
+        fields = ['position', 'sender_email', 'status', 'priority', 'application_platform', 'platform_url',
                  'hr_email', 'hr_name', 'hr_phone', 'recruiter_email', 'recruiter_name', 
                  'applied_date', 'deadline', 'resume', 'cover_letter', 'notes', 'salary_expectation']
         widgets = {
             'position': forms.Select(attrs={'class': 'form-control'}),
+            'sender_email': forms.Select(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
             'priority': forms.Select(attrs={'class': 'form-control'}),
             'application_platform': forms.Select(attrs={'class': 'form-control'}),
@@ -70,6 +71,17 @@ class JobApplicationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         if self.user:
+            # Set up sender email choices
+            user_emails = UserEmail.objects.filter(user=self.user, is_active=True)
+            self.fields['sender_email'].queryset = user_emails
+            
+            # Set primary email as initial
+            primary_email = user_emails.filter(is_primary=True).first()
+            if primary_email:
+                self.fields['sender_email'].initial = primary_email
+            elif user_emails.exists():
+                self.fields['sender_email'].initial = user_emails.first()
+            
             # Filter documents to only show user's documents
             self.fields['resume'].queryset = Document.objects.filter(
                 user=self.user, document_type='RESUME'
@@ -91,6 +103,7 @@ class JobApplicationForm(forms.ModelForm):
             if default_cover_letter:
                 self.fields['cover_letter'].initial = default_cover_letter
         
+        self.fields['sender_email'].empty_label = "Select sender email"
         self.fields['resume'].empty_label = "Select a resume"
         self.fields['cover_letter'].empty_label = "Select a cover letter"
 
@@ -149,70 +162,6 @@ class DocumentForm(forms.ModelForm):
         if commit:
             document.save()
         return document
-
-
-class JobApplicationForm(forms.ModelForm):
-    class Meta:
-        model = JobApplication
-        fields = ['position', 'status', 'priority', 'application_platform', 'platform_url',
-                 'hr_email', 'hr_name', 'hr_phone', 'recruiter_email', 'recruiter_name', 
-                 'applied_date', 'deadline', 'resume', 'cover_letter', 'notes', 'salary_expectation']
-        widgets = {
-            'position': forms.Select(attrs={'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
-            'priority': forms.Select(attrs={'class': 'form-control'}),
-            'application_platform': forms.Select(attrs={'class': 'form-control'}),
-            'platform_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://linkedin.com/jobs/...'}),
-            'hr_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'hr@company.com'}),
-            'hr_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'HR Contact Name'}),
-            'hr_phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+1 (555) 123-4567'}),
-            'recruiter_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'recruiter@company.com'}),
-            'recruiter_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Recruiter Name'}),
-            'applied_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'deadline': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'resume': forms.Select(attrs={'class': 'form-control'}),
-            'cover_letter': forms.Select(attrs={'class': 'form-control'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Additional notes...'}),
-            'salary_expectation': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Expected salary'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-        
-        if self.user:
-            # Filter documents by user and document type
-            self.fields['resume'].queryset = Document.objects.filter(
-                user=self.user, document_type='RESUME'
-            ).order_by('-is_default', '-created_at')
-            self.fields['cover_letter'].queryset = Document.objects.filter(
-                user=self.user, document_type='COVER_LETTER'
-            ).order_by('-is_default', '-created_at')
-            
-            # Set default resume and cover letter if they exist
-            default_resume = Document.objects.filter(
-                user=self.user, document_type='RESUME', is_default=True
-            ).first()
-            if default_resume:
-                self.fields['resume'].initial = default_resume
-                
-            default_cover_letter = Document.objects.filter(
-                user=self.user, document_type='COVER_LETTER', is_default=True
-            ).first()
-            if default_cover_letter:
-                self.fields['cover_letter'].initial = default_cover_letter
-
-        # Add empty option to document fields
-        self.fields['resume'].empty_label = "Select a resume"
-        self.fields['cover_letter'].empty_label = "Select a cover letter"
-
-    def save(self, commit=True):
-        application = super().save(commit=False)
-        if self.user:
-            application.user = self.user
-        if commit:
-            application.save()
-        return application
 
 
 class JobApplicationWithInlineCompanyForm(forms.ModelForm):

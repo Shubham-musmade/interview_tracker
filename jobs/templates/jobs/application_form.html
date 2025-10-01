@@ -38,13 +38,44 @@
                                     Don't see your position? <a href="{% url 'jobs:position_create' %}">Add a new position</a>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.sender_email.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-envelope-check me-1"></i>Sender Email
+                                </label>
+                                {{ form.sender_email }}
+                                {% if form.sender_email.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.sender_email.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Email address to use for this application. <a href="{% url 'jobs:user_email_list' %}">Manage emails</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-4">
                                 <label for="{{ form.status.id_for_label }}" class="form-label fw-medium">Application Status</label>
                                 {{ form.status }}
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="{{ form.priority.id_for_label }}" class="form-label fw-medium">Priority Level</label>
                                 {{ form.priority }}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="{{ form.application_platform.id_for_label }}" class="form-label fw-medium">Application Platform</label>
+                                {{ form.application_platform }}
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="{{ form.platform_url.id_for_label }}" class="form-label fw-medium">
+                                    <i class="bi bi-link-45deg me-1"></i>Job Posting URL
+                                </label>
+                                {{ form.platform_url }}
+                                {% if form.platform_url.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.platform_url.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">Direct link to the job posting (optional)</div>
                             </div>
                         </div>
                     </div>

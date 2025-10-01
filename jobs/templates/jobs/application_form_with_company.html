@@ -193,6 +193,48 @@
                     </div>
                     
                     <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">
+                                <i class="bi bi-envelope-check me-1"></i>{{ form.sender_email.label }}
+                            </label>
+                            {{ form.sender_email }}
+                            {% if form.sender_email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.sender_email.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Email address to use for this application. <a href="{% url 'jobs:user_email_list' %}">Manage emails</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">
+                                <i class="bi bi-globe me-1"></i>{{ form.application_platform.label }}
+                            </label>
+                            {{ form.application_platform }}
+                            {% if form.application_platform.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.application_platform.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-12">
+                            <label class="form-label fw-medium">
+                                <i class="bi bi-link-45deg me-1"></i>{{ form.platform_url.label }}
+                            </label>
+                            {{ form.platform_url }}
+                            {% if form.platform_url.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.platform_url.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Direct link to the job posting (optional)</div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
                         <div class="col-md-4">
                             <label class="form-label fw-medium ">{{ form.status.label }}</label>
                             {{ form.status }}
