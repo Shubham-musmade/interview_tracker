@@ -21,18 +21,6 @@
                     {% csrf_token %}
                     
                     <div class="row g-4">
-                        <!-- Company Selection -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-medium">{{ form.company.label }} *</label>
-                            {{ form.company }}
-                            {% if form.company.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.company.errors.0 }}
-                                </div>
-                            {% endif %}
-                            <small class="form-text text-muted">Select the company for this position</small>
-                        </div>
-                        
                         <!-- Job Title -->
                         <div class="col-md-6">
                             <label class="form-label fw-medium">{{ form.title.label }} *</label>
@@ -42,6 +30,14 @@
                                     {{ form.title.errors.0 }}
                                 </div>
                             {% endif %}
+                        </div>
+                        
+                        <!-- Note about company -->
+                        <div class="col-md-6">
+                            <div class="alert alert-info border-0 mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <small>Company will be assigned when creating applications</small>
+                            </div>
                         </div>
 
                         <!-- Employment Type -->
@@ -163,17 +159,21 @@
         <!-- Quick Actions -->
         <div class="card border-0">
             <div class="card-body p-4">
-                <h6 class="card-title fw-bold mb-3">Quick Actions</h6>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <a href="{% url 'jobs:company_create' %}" class="btn btn-outline-primary w-100">
-                            <i class="bi bi-building-add me-2"></i>Add New Company
-                        </a>
-                    </div>
-                    <div class="col-md-6">
-                        <a href="{% url 'jobs:company_list' %}" class="btn btn-outline-secondary w-100">
-                            <i class="bi bi-building me-2"></i>Manage Companies
-                        </a>
+                <h6 class="card-title fw-bold mb-3">Quick Tips</h6>
+                <div class="alert alert-light border-0">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-lightbulb text-warning me-2"></i>
+                                <small>Create positions for roles you're interested in</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-building text-primary me-2"></i>
+                                <small>Company will be set when creating applications</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -119,10 +119,9 @@ class JobApplicationForm(forms.ModelForm):
 class JobPositionForm(forms.ModelForm):
     class Meta:
         model = JobPosition
-        fields = ['company', 'title', 'description', 'requirements', 'employment_type', 
+        fields = ['title', 'description', 'requirements', 'employment_type', 
                  'salary_min', 'salary_max', 'location', 'remote_allowed', 'job_url']
         widgets = {
-            'company': forms.Select(attrs={'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Job Title'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Job description...'}),
             'requirements': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Job requirements...'}),
@@ -134,9 +133,24 @@ class JobPositionForm(forms.ModelForm):
             'job_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Job posting URL'}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['company'].queryset = Company.objects.all().order_by('name')
+    def save(self, commit=True):
+        position = super().save(commit=False)
+        
+        # Create or get a default "Unknown Company" for positions without company
+        unknown_company, created = Company.objects.get_or_create(
+            name='Unknown Company',
+            defaults={
+                'description': 'Default company for positions without specified company',
+                'website': '',
+                'location': '',
+                'industry': 'Unknown'
+            }
+        )
+        position.company = unknown_company
+        
+        if commit:
+            position.save()
+        return position
 
 
 class DocumentForm(forms.ModelForm):

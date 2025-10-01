@@ -116,6 +116,17 @@ def application_detail(request, pk):
 @login_required
 def application_create(request):
     """Create a new job application"""
+    # Get position from URL parameter if provided
+    position_id = request.GET.get('position')
+    initial_data = {}
+    if position_id:
+        try:
+            from .models import JobPosition
+            position = JobPosition.objects.get(pk=position_id)
+            initial_data['position'] = position
+        except JobPosition.DoesNotExist:
+            messages.warning(request, 'Selected position not found.')
+    
     if request.method == 'POST':
         form = JobApplicationForm(request.POST, user=request.user)
         if form.is_valid():
@@ -123,7 +134,7 @@ def application_create(request):
             messages.success(request, 'Job application created successfully!')
             return redirect('jobs:application_detail', pk=application.pk)
     else:
-        form = JobApplicationForm(user=request.user)
+        form = JobApplicationForm(user=request.user, initial=initial_data)
     
     context = {'form': form, 'title': 'Create New Application'}
     return render(request, 'jobs/application_form.html', context)
@@ -411,7 +422,9 @@ def position_create(request):
             position = form.save()
             messages.success(request, 'Job position created successfully!')
             # Redirect to create application for this position
-            return redirect('jobs:application_create') + f'?position={position.pk}'
+            from django.urls import reverse
+            url = reverse('jobs:application_create') + f'?position={position.pk}'
+            return redirect(url)
     else:
         form = JobPositionForm()
     

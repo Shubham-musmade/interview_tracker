@@ -7,7 +7,7 @@
 <style>
     .application-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        color: black;
         padding: 30px;
         border-radius: 10px;
         margin-bottom: 30px;
@@ -44,13 +44,13 @@
     
     .info-label {
         font-weight: 600;
-        color: #555;
+        color: #000000ff;
         margin-bottom: 5px;
         display: block;
     }
     
     .info-value {
-        color: #333;
+        color: #000000ff;
         margin-bottom: 15px;
     }
     
@@ -168,7 +168,7 @@
         <div class="col-lg-8">
             <!-- Application Details -->
             <div class="info-card">
-                <h5 class="mb-4"><i class="fas fa-info-circle"></i> Application Details</h5>
+                <h5 class="mb-4 text-black"><i class="fas fa-info-circle"></i> Application Details</h5>
                 
                 <div class="row">
                     <div class="col-md-6">
@@ -181,7 +181,7 @@
                             {% endif %}
                         </div>
                         
-                        <span class="info-label">Deadline:</span>
+                        <span class="info-label text-black">Deadline:</span>
                         <div class="info-value">
                             {% if application.deadline %}
                                 {{ application.deadline|date:"F d, Y" }}
@@ -190,7 +190,7 @@
                             {% endif %}
                         </div>
                         
-                        <span class="info-label">Salary Expectation:</span>
+                        <span class="info-label text-black">Salary Expectation:</span>
                         <div class="info-value">
                             {% if application.salary_expectation %}
                                 ${{ application.salary_expectation|floatformat:0 }}
@@ -201,14 +201,14 @@
                     </div>
                     
                     <div class="col-md-6">
-                        <span class="info-label">Created:</span>
+                        <span class="info-label text-black">Created:</span>
                         <div class="info-value">{{ application.created_at|date:"F d, Y \a\t g:i A" }}</div>
-                        
-                        <span class="info-label">Last Updated:</span>
+
+                        <span class="info-label text-black">Last Updated:</span>
                         <div class="info-value">{{ application.updated_at|date:"F d, Y \a\t g:i A" }}</div>
                         
                         {% if application.position.job_url %}
-                        <span class="info-label">Job Posting:</span>
+                        <span class="info-label text-black">Job Posting:</span>
                         <div class="info-value">
                             <a href="{{ application.position.job_url }}" target="_blank" class="text-primary">
                                 <i class="fas fa-external-link-alt"></i> View Original Posting
@@ -222,12 +222,12 @@
             <!-- Contact Information -->
             {% if application.hr_email or application.hr_name or application.recruiter_email or application.recruiter_name %}
             <div class="info-card">
-                <h5 class="mb-4"><i class="fas fa-users"></i> Contact Information</h5>
+                <h5 class="mb-4 text-black"><i class="fas fa-users"></i> Contact Information</h5>
                 
                 <div class="row">
                     <div class="col-md-6">
                         {% if application.hr_name or application.hr_email %}
-                        <span class="info-label">HR Contact:</span>
+                        <span class="info-label text-black">HR Contact:</span>
                         <div class="info-value">
                             {% if application.hr_name %}{{ application.hr_name }}{% endif %}
                             {% if application.hr_email %}
@@ -243,7 +243,7 @@
                     
                     <div class="col-md-6">
                         {% if application.recruiter_name or application.recruiter_email %}
-                        <span class="info-label">Recruiter:</span>
+                        <span class="info-label text-black">Recruiter:</span>
                         <div class="info-value">
                             {% if application.recruiter_name %}{{ application.recruiter_name }}{% endif %}
                             {% if application.recruiter_email %}
@@ -273,7 +273,7 @@
             
             <!-- Action Buttons -->
             <div class="info-card">
-                <h5 class="mb-4"><i class="fas fa-cog"></i> Actions</h5>
+                <h5 class="mb-4 text-black"><i class="fas fa-cog"></i> Actions</h5>
                 
                 <div class="d-flex flex-wrap">
                     <!-- Enhanced HR Email Button -->
@@ -304,16 +304,16 @@
             <!-- Job Description -->
             {% if application.position.description %}
             <div class="info-card">
-                <h5 class="mb-3"><i class="fas fa-file-alt"></i> Job Description</h5>
-                <div class="text-muted">{{ application.position.description|linebreaks }}</div>
+                <h5 class="mb-3 text-black"><i class="fas fa-file-alt"></i> Job Description</h5>
+                <p class="text-black">{{ application.position.description }}</p>
             </div>
             {% endif %}
             
             <!-- Job Requirements -->
             {% if application.position.requirements %}
             <div class="info-card">
-                <h5 class="mb-3"><i class="fas fa-list-check"></i> Requirements</h5>
-                <div class="text-muted">{{ application.position.requirements|linebreaks }}</div>
+                <h5 class="mb-3 text-black"><i class="fas fa-list-check"></i> Requirements</h5>
+                <p class=" text-black">{{ application.position.requirements }}</p>
             </div>
             {% endif %}
         </div>
@@ -321,32 +321,32 @@
         <div class="col-lg-4">
             <!-- Documents -->
             <div class="info-card">
-                <h5 class="mb-4"><i class="fas fa-paperclip"></i> Attached Documents</h5>
+                <h5 class="mb-4 text-black"><i class="fas fa-paperclip"></i> Attached Documents</h5>
                 
                 {% if application.resume %}
                 <div class="document-item">
                     <div class="document-icon">📄</div>
-                    <div>
+                    <div class="text-black">
                         <strong>Resume:</strong> {{ application.resume.name }}<br>
-                        <small class="text-muted">Updated {{ application.resume.updated_at|date:"M d, Y" }}</small>
+                        <small class="">Updated {{ application.resume.updated_at|date:"M d, Y" }}</small>
                     </div>
                 </div>
                 {% else %}
-                <div class="text-muted mb-3">
+                <div class="mb-3">
                     <i class="fas fa-exclamation-triangle"></i> No resume attached
                 </div>
                 {% endif %}
                 
                 {% if application.cover_letter %}
-                <div class="document-item">
+                <div class="document-item text-black">
                     <div class="document-icon">📝</div>
-                    <div>
-                        <strong>Cover Letter:</strong> {{ application.cover_letter.name }}<br>
-                        <small class="text-muted">Updated {{ application.cover_letter.updated_at|date:"M d, Y" }}</small>
+                    <div class="text-black">
+                        <strong class="">Cover Letter:</strong> {{ application.cover_letter.name }}<br>
+                        <small class="">Updated {{ application.cover_letter.updated_at|date:"M d, Y" }}</small>
                     </div>
                 </div>
                 {% else %}
-                <div class="text-muted mb-3">
+                <div class="mb-3 text-black">
                     <i class="fas fa-exclamation-triangle"></i> No cover letter attached
                 </div>
                 {% endif %}
@@ -358,14 +358,14 @@
             
             <!-- Company Info -->
             <div class="info-card">
-                <h5 class="mb-4"><i class="fas fa-building"></i> Company Information</h5>
+                <h5 class="mb-4 text-black"><i class="fas fa-building"></i> Company Information</h5>
                 
                 <span class="info-label">Company:</span>
                 <div class="info-value">{{ application.position.company.name }}</div>
                 
                 {% if application.position.company.website %}
                 <span class="info-label">Website:</span>
-                <div class="info-value">
+                <div class="info-value text-black">
                     <a href="{{ application.position.company.website }}" target="_blank">
                         {{ application.position.company.website }}
                     </a>
@@ -374,21 +374,21 @@
                 
                 {% if application.position.company.industry %}
                 <span class="info-label">Industry:</span>
-                <div class="info-value">{{ application.position.company.industry }}</div>
+                <div class="info-value text-black">{{ application.position.company.industry }}</div>
                 {% endif %}
                 
                 {% if application.position.company.location %}
                 <span class="info-label">Location:</span>
-                <div class="info-value">{{ application.position.company.location }}</div>
+                <div class="info-value text-black">{{ application.position.company.location }}</div>
                 {% endif %}
             </div>
             
             <!-- Interview Rounds -->
             {% if interview_rounds %}
             <div class="info-card">
-                <h5 class="mb-4"><i class="fas fa-calendar-alt"></i> Interview Rounds</h5>
+                <h5 class="mb-4 text-black"><i class="fas fa-calendar-alt"></i> Interview Rounds</h5>
                 {% for round in interview_rounds %}
-                <div class="mb-3 p-2 border-start border-3 border-primary">
+                <div class="mb-3 p-2 border-start border-3 border-primary text-black">
                     <strong>Round {{ round.round_number }}: {{ round.get_interview_type_display }}</strong><br>
                     <small class="text-muted">
                         {{ round.scheduled_date|date:"F d, Y \a\t g:i A" }}<br>
@@ -404,8 +404,8 @@
     <!-- Notes Section -->
     {% if application.notes %}
     <div class="notes-section">
-        <h5><i class="fas fa-sticky-note"></i> Notes</h5>
-        <div class="mt-3">{{ application.notes|linebreaks }}</div>
+        <h5 class="text-black"><i class="fas fa-sticky-note"></i> Notes</h5>
+        <div class="mt-3 text-black">{{ application.notes }}</div>
     </div>
     {% endif %}
 </div>
