@@ -53,16 +53,16 @@
                     <div class="d-flex align-items-start mb-3">
                         <div class="me-3">
                             <div class="bg-{% if document.document_type == 'RESUME' %}primary{% elif document.document_type == 'COVER_LETTER' %}success{% elif document.document_type == 'PORTFOLIO' %}info{% else %}secondary{% endif %} bg-opacity-10 rounded-3 p-3">
-                                <i class="bi bi-{% if document.document_type == 'RESUME' %}file-person{% elif document.document_type == 'COVER_LETTER' %}file-text{% elif document.document_type == 'PORTFOLIO' %}folder{% else %}file{% endif %} text-{% if document.document_type == 'RESUME' %}primary{% elif document.document_type == 'COVER_LETTER' %}success{% elif document.document_type == 'PORTFOLIO' %}info{% else %}secondary{% endif %}" style="font-size: 1.5rem;"></i>
+                                <i class="bi bi-{% if document.document_type == 'RESUME' %}file-person{% elif document.document_type == 'COVER_LETTER' %}file-text{% elif document.document_type == 'PORTFOLIO' %}folder{% else %}file{% endif %} " style="font-size: 1.5rem;"></i>
                             </div>
                         </div>
                         <div class="flex-grow-1">
                             <h5 class="card-title fw-bold mb-1">{{ document.name }}</h5>
-                            <span class="badge rounded-pill bg-{% if document.document_type == 'RESUME' %}primary{% elif document.document_type == 'COVER_LETTER' %}success{% elif document.document_type == 'PORTFOLIO' %}info{% else %}secondary{% endif %} bg-opacity-20 text-{% if document.document_type == 'RESUME' %}primary{% elif document.document_type == 'COVER_LETTER' %}success{% elif document.document_type == 'PORTFOLIO' %}info{% else %}secondary{% endif %}">
+                            <span class="badge rounded-pill bg-{% if document.document_type == 'RESUME' %}primary{% elif document.document_type == 'COVER_LETTER' %}success{% elif document.document_type == 'PORTFOLIO' %}info{% else %}secondary{% endif %} bg-opacity-20 ">
                                 {{ document.get_document_type_display }}
                             </span>
                             {% if document.is_default %}
-                                <span class="badge bg-warning bg-opacity-20 text-warning rounded-pill ms-1">
+                                <span class="badge bg-warning bg-opacity-20 rounded-pill ms-1">
                                     <i class="bi bi-star-fill me-1"></i>Default
                                 </span>
                             {% endif %}
@@ -96,6 +96,9 @@
                     <div class="d-flex gap-2">
                         <a href="{{ document.file.url }}" target="_blank" class="btn btn-outline-primary flex-fill">
                             <i class="bi bi-eye me-1"></i>View
+                        </a>
+                        <a href="{% url 'jobs:document_edit' document.pk %}" class="btn btn-outline-warning">
+                            <i class="bi bi-pencil"></i>
                         </a>
                         <a href="{{ document.file.url }}" download class="btn btn-outline-success">
                             <i class="bi bi-download"></i>

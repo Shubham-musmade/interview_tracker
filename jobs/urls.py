@@ -26,6 +26,7 @@ urlpatterns = [
     # Documents
     path('documents/', views.document_list, name='document_list'),
     path('documents/upload/', views.document_upload, name='document_upload'),
+    path('documents/<int:pk>/edit/', views.document_edit, name='document_edit'),
     path('documents/<int:pk>/delete/', views.document_delete, name='document_delete'),
     
     # Companies

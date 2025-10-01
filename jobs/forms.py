@@ -168,12 +168,6 @@ class JobApplicationWithInlineCompanyForm(forms.ModelForm):
     """Extended job application form with inline company creation"""
     
     # Inline company fields
-    create_new_company = forms.BooleanField(
-        required=False,
-        initial=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'createNewCompany'}),
-        label='Create New Company'
-    )
     company_name = forms.CharField(
         max_length=200,
         required=False,
@@ -253,10 +247,11 @@ class JobApplicationWithInlineCompanyForm(forms.ModelForm):
 
     class Meta:
         model = JobApplication
-        fields = ['status', 'priority', 'hr_email', 'hr_name', 'hr_phone',
+        fields = ['sender_email', 'status', 'priority', 'hr_email', 'hr_name', 'hr_phone',
                  'recruiter_email', 'recruiter_name', 'applied_date', 'deadline',
                  'resume', 'cover_letter', 'notes', 'salary_expectation']
         widgets = {
+            'sender_email': forms.Select(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
             'priority': forms.Select(attrs={'class': 'form-control'}),
             'hr_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'hr@company.com'}),
@@ -277,6 +272,18 @@ class JobApplicationWithInlineCompanyForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         if self.user:
+            # Filter user emails
+            user_emails = UserEmail.objects.filter(user=self.user, is_active=True)
+            self.fields['sender_email'].queryset = user_emails
+            
+            # Set primary email as initial if exists
+            primary_email = user_emails.filter(is_primary=True).first()
+            if primary_email:
+                self.fields['sender_email'].initial = primary_email
+            elif user_emails.exists():
+                # If no primary email, set first active email as initial
+                self.fields['sender_email'].initial = user_emails.first()
+            
             # Filter documents by user and document type
             self.fields['resume'].queryset = Document.objects.filter(
                 user=self.user, document_type='RESUME'
@@ -298,18 +305,19 @@ class JobApplicationWithInlineCompanyForm(forms.ModelForm):
             if default_cover_letter:
                 self.fields['cover_letter'].initial = default_cover_letter
 
-        # Add empty option to document fields
+        # Add empty option to document and email fields
+        self.fields['sender_email'].empty_label = "Select an email"
         self.fields['resume'].empty_label = "Select a resume"
         self.fields['cover_letter'].empty_label = "Select a cover letter"
 
     def clean(self):
         cleaned_data = super().clean()
-        create_new_company = cleaned_data.get('create_new_company')
         company_name = cleaned_data.get('company_name')
         job_title = cleaned_data.get('job_title')
         
-        if create_new_company and not company_name:
-            raise forms.ValidationError("Company name is required when creating a new company.")
+        # Company name is always required for this form
+        if not company_name:
+            raise forms.ValidationError("Company name is required.")
         
         if not job_title:
             raise forms.ValidationError("Job title is required.")
@@ -321,23 +329,18 @@ class JobApplicationWithInlineCompanyForm(forms.ModelForm):
         if self.user:
             application.user = self.user
         
-        # Handle company creation
-        create_new_company = self.cleaned_data.get('create_new_company')
-        if create_new_company:
-            company = Company.objects.create(
-                name=self.cleaned_data['company_name'],
-                website=self.cleaned_data.get('company_website', ''),
-                location=self.cleaned_data.get('company_location', ''),
-                industry=self.cleaned_data.get('company_industry', ''),
-                description=self.cleaned_data.get('company_description', '')
-            )
-        else:
-            # This shouldn't happen in the new form, but kept for safety
-            company = None
+        # Always create company - this form is specifically for creating applications with new companies
+        company = Company.objects.create(
+            name=self.cleaned_data['company_name'],
+            website=self.cleaned_data.get('company_website', ''),
+            location=self.cleaned_data.get('company_location', ''),
+            industry=self.cleaned_data.get('company_industry', ''),
+            description=self.cleaned_data.get('company_description', '')
+        )
         
         # Create job position
         position = JobPosition.objects.create(
-            company=company,  # Will be the newly created company
+            company=company,  # Always the newly created company
             title=self.cleaned_data['job_title'],
             description=self.cleaned_data.get('job_description', ''),
             requirements=self.cleaned_data.get('job_requirements', ''),

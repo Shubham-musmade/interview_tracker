@@ -64,20 +64,23 @@
                                             <div class="btn-group btn-group-sm" role="group">
                                                 {% if not email.is_primary %}
                                                     <a href="{% url 'jobs:user_email_set_default' email.pk %}" 
-                                                       class="btn btn-outline-warning btn-sm" 
+                                                       class="btn btn-outline-warning btn-sm " 
                                                        title="Set as Primary">
+                                                       Set Primary
                                                         <i class="fas fa-star"></i>
                                                     </a>
                                                 {% endif %}
                                                 <a href="{% url 'jobs:user_email_edit' email.pk %}" 
                                                    class="btn btn-outline-primary btn-sm" 
                                                    title="Edit">
+                                                   Edit
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 {% if not email.is_primary %}
                                                     <a href="{% url 'jobs:user_email_delete' email.pk %}" 
                                                        class="btn btn-outline-danger btn-sm" 
                                                        title="Delete">
+                                                       Delete
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 {% endif %}

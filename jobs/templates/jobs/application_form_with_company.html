@@ -416,7 +416,7 @@
             </div>
 
             <!-- Hidden Fields -->
-            {{ form.create_new_company.as_hidden }}
+
 
             <!-- Form Actions -->
             <div class="d-flex gap-3 mb-4">
@@ -467,7 +467,6 @@ document.getElementById('{{ form.company_location.id_for_label }}').addEventList
     }
 });
 
-// Set the create_new_company field to true (since this form is specifically for creating new companies)
-document.getElementById('{{ form.create_new_company.id_for_label }}').checked = true;
+
 </script>
 {% endblock %}

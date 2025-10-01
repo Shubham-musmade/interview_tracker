@@ -296,6 +296,24 @@ def document_upload(request):
 
 
 @login_required
+def document_edit(request, pk):
+    """Edit an existing document"""
+    document = get_object_or_404(Document, pk=pk, user=request.user)
+    
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES, instance=document, user=request.user)
+        if form.is_valid():
+            document = form.save()
+            messages.success(request, 'Document updated successfully!')
+            return redirect('jobs:document_list')
+    else:
+        form = DocumentForm(instance=document, user=request.user)
+    
+    context = {'form': form, 'document': document, 'title': 'Edit Document'}
+    return render(request, 'jobs/document_form.html', context)
+
+
+@login_required
 def document_delete(request, pk):
     """Delete a document"""
     document = get_object_or_404(Document, pk=pk, user=request.user)
