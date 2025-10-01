@@ -7,10 +7,10 @@ from django.http import JsonResponse
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import Company, JobPosition, JobApplication, Document, InterviewRound, ApplicationNote
+from .models import Company, JobPosition, JobApplication, Document, InterviewRound, ApplicationNote, UserEmail
 from .forms import (CompanyForm, JobPositionForm, JobApplicationForm, DocumentForm, 
-                   InterviewRoundForm, ApplicationNoteForm, EmailApplicationForm, JobApplicationWithInlineCompanyForm)
-from .email_utils import send_application_email
+                   InterviewRoundForm, ApplicationNoteForm, EmailApplicationForm, JobApplicationWithInlineCompanyForm, HREmailForm, UserEmailForm)
+from .email_utils import send_application_email, send_hr_application_email
 
 
 def home(request):
@@ -209,6 +209,49 @@ def send_application_email_view(request, pk):
         'title': 'Send Application Email'
     }
     return render(request, 'jobs/send_email.html', context)
+
+
+@login_required
+def send_hr_email_view(request, pk):
+    """Send professional application email to HR with attractive template"""
+    application = get_object_or_404(JobApplication, pk=pk, user=request.user)
+    
+    if request.method == 'POST':
+        form = HREmailForm(request.POST, application=application)
+        if form.is_valid():
+            # Save the sender email and HR details to the application
+            application.sender_email = form.cleaned_data['sender_email']
+            application.hr_email = form.cleaned_data['to_email']
+            application.hr_name = form.cleaned_data['hr_name']
+            application.save()
+            
+            success = send_hr_application_email(
+                application=application,
+                sender_email=form.cleaned_data['sender_email'],
+                to_email=form.cleaned_data['to_email'],
+                cc_email=form.cleaned_data['cc_email'],
+                custom_message=form.cleaned_data['custom_message'],
+                hr_name=form.cleaned_data['hr_name'],
+                attach_resume=form.cleaned_data['attach_resume'],
+                attach_cover_letter=form.cleaned_data['attach_cover_letter']
+            )
+            
+            if success:
+                application.mark_as_sent()
+                messages.success(request, 'Professional application email sent successfully to HR!')
+                return redirect('jobs:application_detail', pk=application.pk)
+            else:
+                messages.error(request, 'Failed to send email. Please check your email settings and try again.')
+    else:
+        form = HREmailForm(application=application)
+    
+    context = {
+        'form': form,
+        'application': application,
+        'title': 'Send Professional Email to HR',
+        'show_preview': True  # Enable email preview feature
+    }
+    return render(request, 'jobs/send_hr_email.html', context)
 
 
 @login_required
@@ -490,3 +533,68 @@ def statistics(request):
         'recent_applications': recent_applications,
     }
     return render(request, 'jobs/statistics.html', context)
+
+
+@login_required
+def user_email_list(request):
+    """List all user emails"""
+    user_emails = UserEmail.objects.filter(user=request.user).order_by('-is_primary', 'email_type', 'email')
+    return render(request, 'jobs/user_email_list.html', {'user_emails': user_emails})
+
+
+@login_required
+def user_email_create(request):
+    """Create a new user email"""
+    if request.method == 'POST':
+        form = UserEmailForm(request.POST, user=request.user)
+        if form.is_valid():
+            user_email = form.save(commit=False)
+            user_email.user = request.user
+            user_email.save()
+            messages.success(request, 'Email address added successfully!')
+            return redirect('jobs:user_email_list')
+    else:
+        form = UserEmailForm(user=request.user)
+    
+    return render(request, 'jobs/user_email_form.html', {'form': form, 'title': 'Add New Email'})
+
+
+@login_required
+def user_email_edit(request, pk):
+    """Edit a user email"""
+    user_email = get_object_or_404(UserEmail, pk=pk, user=request.user)
+    
+    if request.method == 'POST':
+        form = UserEmailForm(request.POST, instance=user_email, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Email address updated successfully!')
+            return redirect('jobs:user_email_list')
+    else:
+        form = UserEmailForm(instance=user_email, user=request.user)
+    
+    return render(request, 'jobs/user_email_form.html', {'form': form, 'title': 'Edit Email'})
+
+
+@login_required
+def user_email_delete(request, pk):
+    """Delete a user email"""
+    user_email = get_object_or_404(UserEmail, pk=pk, user=request.user)
+    
+    if request.method == 'POST':
+        email_address = user_email.email
+        user_email.delete()
+        messages.success(request, f'Email address {email_address} deleted successfully!')
+        return redirect('jobs:user_email_list')
+    
+    return render(request, 'jobs/user_email_confirm_delete.html', {'user_email': user_email})
+
+
+@login_required
+def user_email_set_default(request, pk):
+    """Set an email as primary"""
+    user_email = get_object_or_404(UserEmail, pk=pk, user=request.user)
+    user_email.is_primary = True
+    user_email.save()  # This will automatically unset other primary emails due to model logic
+    messages.success(request, f'Set {user_email.email} as primary email!')
+    return redirect('jobs:user_email_list')

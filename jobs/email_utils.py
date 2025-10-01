@@ -1,4 +1,4 @@
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -52,6 +52,87 @@ def send_application_email(application, subject, message, to_email, cc_email=Non
         
     except Exception as e:
         print(f"Error sending email: {str(e)}")
+        return False
+
+
+def send_hr_application_email(application, to_email, sender_email=None, cc_email=None, custom_message=None, 
+                             hr_name=None, attach_resume=True, attach_cover_letter=True):
+    """
+    Send a professional job application email to HR using HTML template
+    
+    Args:
+        application: JobApplication instance
+        to_email: HR email address
+        sender_email: UserEmail instance to send from (optional)
+        cc_email: CC email (optional)
+        custom_message: Custom message to include in email
+        hr_name: HR person's name for personalization
+        attach_resume: Whether to attach resume
+        attach_cover_letter: Whether to attach cover letter
+    
+    Returns:
+        bool: True if email sent successfully, False otherwise
+    """
+    try:
+        user = application.user
+        position = application.position
+        
+        # Create subject
+        subject = f"Application for {position.title} - {user.get_full_name() or user.username}"
+        
+        # Prepare context for templates
+        context = {
+            'user': user,
+            'application': application,
+            'position': position,
+            'hr_name': hr_name,
+            'custom_message': custom_message,
+        }
+        
+        # Render HTML and text content
+        html_content = render_to_string('jobs/emails/hr_application_email.html', context)
+        text_content = render_to_string('jobs/emails/hr_application_email.txt', context)
+        
+        # Determine from_email
+        if sender_email:
+            # Use the sender email with label if available
+            from_name = sender_email.label or application.user.get_full_name() or application.user.username
+            from_email_address = f"{from_name} <{sender_email.email}>"
+        else:
+            from_email_address = settings.DEFAULT_FROM_EMAIL
+        
+        # Create email with both HTML and text versions
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=from_email_address,
+            to=[to_email],
+            cc=[cc_email] if cc_email else [],
+        )
+        
+        # Attach HTML version
+        email.attach_alternative(html_content, "text/html")
+        
+        # Attach resume if requested and available
+        if attach_resume and application.resume and application.resume.file:
+            if os.path.exists(application.resume.file.path):
+                email.attach_file(application.resume.file.path)
+        
+        # Attach cover letter if requested and available
+        if attach_cover_letter and application.cover_letter and application.cover_letter.file:
+            if os.path.exists(application.cover_letter.file.path):
+                email.attach_file(application.cover_letter.file.path)
+        
+        # Send email
+        email.send()
+        
+        # Mark application as sent
+        application.mark_as_sent()
+        
+        return True
+        
+    except Exception as e:
+        print(f"Error sending HR application email: {str(e)}")
         return False
 
 

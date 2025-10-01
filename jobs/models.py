@@ -3,6 +3,38 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 
+class UserEmail(models.Model):
+    """Model to store multiple email addresses for a user"""
+    EMAIL_TYPE_CHOICES = [
+        ('PERSONAL', 'Personal'),
+        ('PROFESSIONAL', 'Professional'),
+        ('ACADEMIC', 'Academic'),
+        ('OTHER', 'Other'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_emails')
+    email = models.EmailField()
+    email_type = models.CharField(max_length=20, choices=EMAIL_TYPE_CHOICES, default='PROFESSIONAL')
+    label = models.CharField(max_length=100, help_text="e.g., 'Work Gmail', 'University Email'")
+    is_primary = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-is_primary', 'email_type', 'label']
+        unique_together = ['user', 'email']
+
+    def __str__(self):
+        return f"{self.label} ({self.email})"
+
+    def save(self, *args, **kwargs):
+        # If this is set as primary, unset other primary emails for this user
+        if self.is_primary:
+            UserEmail.objects.filter(user=self.user, is_primary=True).exclude(pk=self.pk).update(is_primary=False)
+        super().save(*args, **kwargs)
+
+
 class Company(models.Model):
     """Model to store company information"""
     name = models.CharField(max_length=200)
@@ -111,10 +143,37 @@ class JobApplication(models.Model):
         ('HIGH', 'High'),
     ]
 
+    PLATFORM_CHOICES = [
+        ('LINKEDIN', 'LinkedIn'),
+        ('INDEED', 'Indeed'),
+        ('GLASSDOOR', 'Glassdoor'),
+        ('COMPANY_WEBSITE', 'Company Website'),
+        ('JOBBOARD', 'Job Board'),
+        ('RECRUITER', 'Recruiter Contact'),
+        ('REFERRAL', 'Employee Referral'),
+        ('CAREER_FAIR', 'Career Fair'),
+        ('DIRECT_EMAIL', 'Direct Email'),
+        ('OTHER', 'Other'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
     position = models.ForeignKey(JobPosition, on_delete=models.CASCADE, related_name='applications')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='DRAFT')
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='MEDIUM')
+    
+    # Application source tracking
+    application_platform = models.CharField(
+        max_length=20, 
+        choices=PLATFORM_CHOICES, 
+        blank=True, 
+        null=True,
+        help_text="Platform or method used to apply for this job"
+    )
+    platform_url = models.URLField(
+        blank=True, 
+        null=True,
+        help_text="Direct link to job posting if applied online"
+    )
     
     # Contact information
     hr_email = models.EmailField(blank=True, null=True)
@@ -146,6 +205,16 @@ class JobApplication(models.Model):
     # Additional information
     notes = models.TextField(blank=True, null=True)
     salary_expectation = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    
+    # Email tracking
+    sender_email = models.ForeignKey(
+        UserEmail,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sent_applications',
+        help_text="Email address used to send the application"
+    )
     email_sent = models.BooleanField(default=False)
     email_sent_date = models.DateTimeField(blank=True, null=True)
     

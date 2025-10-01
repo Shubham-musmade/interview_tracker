@@ -174,10 +174,27 @@
                                 <i class="bi bi-pencil me-1"></i>Edit
                             </a>
                             {% if not application.email_sent %}
-                            <a href="{% url 'jobs:send_application_email' application.pk %}" 
-                               class="btn btn-success">
-                                <i class="bi bi-send me-1"></i>Send
-                            </a>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'jobs:send_hr_email' application.pk %}" 
+                                   class="btn btn-success" title="Send professional email with template">
+                                    <i class="bi bi-envelope-at me-1"></i>Send to HR
+                                </a>
+                                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'jobs:send_hr_email' application.pk %}">
+                                            <i class="bi bi-envelope-at me-2"></i>Professional Email Template
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'jobs:send_application_email' application.pk %}">
+                                            <i class="bi bi-send me-2"></i>Basic Email
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                             {% endif %}
                         </div>
                     </div>

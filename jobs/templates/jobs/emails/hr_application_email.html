@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application - {{ position.title }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .applicant-info {
+            background-color: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 120px;
+            margin-right: 15px;
+        }
+        
+        .info-value {
+            color: #333;
+            flex: 1;
+        }
+        
+        .message-section {
+            margin: 25px 0;
+        }
+        
+        .message-section h3 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+        }
+        
+        .message-text {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+            font-style: italic;
+            line-height: 1.7;
+        }
+        
+        .attachments {
+            background-color: #fff8e1;
+            border: 1px solid #ffd54f;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .attachments h3 {
+            color: #f57f17;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .attachment-item {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .attachment-item:hover {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .attachment-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            background-color: #667eea;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .footer {
+            background-color: #f5f5f5;
+            padding: 25px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .contact-info {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 15px 0;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            margin: 25px 0;
+            border: none;
+        }
+        
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 0;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .info-label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Job Application</h1>
+            <p class="subtitle">{{ position.title }} at {{ position.company.name }}</p>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <!-- Greeting -->
+            <p>Dear {% if hr_name %}{{ hr_name }}{% else %}Hiring Manager{% endif %},</p>
+            
+            <p>I hope this email finds you well. I am writing to express my strong interest in the <strong>{{ position.title }}</strong> position at <strong>{{ position.company.name }}</strong>.</p>
+            
+            <!-- Applicant Information -->
+            <div class="applicant-info">
+                <div class="info-row">
+                    <span class="info-label">Applicant:</span>
+                    <span class="info-value">{{ user.first_name }} {{ user.last_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">{{ user.email }}</span>
+                </div>
+                {% if application.salary_expectation %}
+                <div class="info-row">
+                    <span class="info-label">Salary Expectation:</span>
+                    <span class="info-value">${{ application.salary_expectation|floatformat:0 }}</span>
+                </div>
+                {% endif %}
+                <div class="info-row">
+                    <span class="info-label">Application Date:</span>
+                    <span class="info-value">{{ application.created_at|date:"F d, Y" }}</span>
+                </div>
+                {% if position.job_url %}
+                <div class="info-row">
+                    <span class="info-label">Job Posting:</span>
+                    <span class="info-value"><a href="{{ position.job_url }}" style="color: #667eea;">View Original Posting</a></span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <hr class="divider">
+            
+            <!-- Custom Message -->
+            {% if custom_message %}
+            <div class="message-section">
+                <h3>📝 Personal Message</h3>
+                <div class="message-text">
+                    {{ custom_message|linebreaks }}
+                </div>
+            </div>
+            {% else %}
+            <div class="message-section">
+                <h3>📝 Why I'm a Great Fit</h3>
+                <div class="message-text">
+                    I am excited about the opportunity to contribute to {{ position.company.name }}'s continued success. With my background and skills, I believe I would be a valuable addition to your team. I have attached my resume and cover letter for your review.
+                    <br><br>
+                    I would welcome the opportunity to discuss how my experience and enthusiasm can benefit your organization. Thank you for considering my application.
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Attachments -->
+            {% if application.resume or application.cover_letter %}
+            <div class="attachments">
+                <h3>📎 Attached Documents</h3>
+                {% if application.resume %}
+                <div class="attachment-item">
+                    <div class="attachment-icon">📄</div>
+                    <div>
+                        <strong>Resume:</strong> {{ application.resume.name }}
+                        <br><small style="color: #666;">{{ application.resume.document_type|title }} • Updated {{ application.resume.updated_at|date:"M d, Y" }}</small>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if application.cover_letter %}
+                <div class="attachment-item">
+                    <div class="attachment-icon">📝</div>
+                    <div>
+                        <strong>Cover Letter:</strong> {{ application.cover_letter.name }}
+                        <br><small style="color: #666;">{{ application.cover_letter.document_type|title }} • Updated {{ application.cover_letter.updated_at|date:"M d, Y" }}</small>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Call to Action -->
+            <p>I look forward to hearing from you and would be happy to provide any additional information you may need.</p>
+            
+            <p>Best regards,<br>
+            <strong>{{ user.first_name }} {{ user.last_name }}</strong></p>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Thank you for your time and consideration!</strong></p>
+            <div class="contact-info">
+                <p>{{ user.email }} • Sent via Interview Tracker</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

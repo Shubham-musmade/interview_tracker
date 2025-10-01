@@ -1,0 +1,363 @@
+{% extends 'jobs/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .email-preview {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        max-height: 500px;
+        overflow-y: auto;
+        background-color: #f8f9fa;
+        padding: 0;
+        margin-top: 20px;
+    }
+    
+    .form-section {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .section-title {
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+    
+    .document-status {
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .document-available {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+    
+    .document-missing {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+    
+    .document-icon {
+        margin-right: 10px;
+        font-size: 1.2em;
+    }
+    
+    .btn-preview {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        transition: transform 0.2s ease;
+    }
+    
+    .btn-preview:hover {
+        transform: translateY(-1px);
+        color: white;
+    }
+    
+    .btn-send {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-send:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        color: white;
+    }
+    
+    .application-info {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+    
+    .application-info h4 {
+        margin: 0;
+        font-size: 1.3em;
+    }
+    
+    .application-info p {
+        margin: 5px 0 0 0;
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Application Info -->
+            <div class="application-info">
+                <h4>📧 Send Email to HR</h4>
+                <p>{{ application.position.title }} at {{ application.position.company.name }}</p>
+            </div>
+            
+            <form method="post" id="hr-email-form">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-lg-6">
+                        <!-- Recipient Information -->
+                        <div class="form-section">
+                            <h5 class="section-title">👤 Recipient Information</h5>
+                            
+                            <div class="form-group mb-3">
+                                <label for="{{ form.hr_name.id_for_label }}" class="form-label">{{ form.hr_name.label }}</label>
+                                {{ form.hr_name }}
+                                {% if form.hr_name.help_text %}
+                                <small class="form-text text-muted">{{ form.hr_name.help_text }}</small>
+                                {% endif %}
+                                {% if form.hr_name.errors %}
+                                <div class="text-danger">{{ form.hr_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="{{ form.to_email.id_for_label }}" class="form-label">{{ form.to_email.label }} *</label>
+                                {{ form.to_email }}
+                                {% if form.to_email.errors %}
+                                <div class="text-danger">{{ form.to_email.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="{{ form.cc_email.id_for_label }}" class="form-label">{{ form.cc_email.label }}</label>
+                                {{ form.cc_email }}
+                                {% if form.cc_email.help_text %}
+                                <small class="form-text text-muted">{{ form.cc_email.help_text }}</small>
+                                {% endif %}
+                                {% if form.cc_email.errors %}
+                                <div class="text-danger">{{ form.cc_email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Message Customization -->
+                        <div class="form-section">
+                            <h5 class="section-title">✏️ Message Customization</h5>
+                            
+                            <div class="form-group mb-3">
+                                <label for="{{ form.custom_message.id_for_label }}" class="form-label">{{ form.custom_message.label }}</label>
+                                {{ form.custom_message }}
+                                {% if form.custom_message.help_text %}
+                                <small class="form-text text-muted">{{ form.custom_message.help_text }}</small>
+                                {% endif %}
+                                {% if form.custom_message.errors %}
+                                <div class="text-danger">{{ form.custom_message.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Email Options -->
+                        <div class="form-section">
+                            <h5 class="section-title">⚙️ Email Options</h5>
+                            
+                            <div class="form-check mb-3">
+                                {{ form.use_template }}
+                                <label class="form-check-label" for="{{ form.use_template.id_for_label }}">
+                                    {{ form.use_template.label }}
+                                </label>
+                                {% if form.use_template.help_text %}
+                                <small class="form-text text-muted d-block">{{ form.use_template.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <!-- Document Attachments -->
+                        <div class="form-section">
+                            <h5 class="section-title">📎 Document Attachments</h5>
+                            
+                            <!-- Resume Status -->
+                            {% if application.resume %}
+                            <div class="document-status document-available">
+                                <span class="document-icon">📄</span>
+                                <div>
+                                    <strong>Resume Available:</strong> {{ application.resume.name }}
+                                    <br><small>{{ application.resume.document_type|title }} • Updated {{ application.resume.updated_at|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                {{ form.attach_resume }}
+                                <label class="form-check-label" for="{{ form.attach_resume.id_for_label }}">
+                                    {{ form.attach_resume.label }}
+                                </label>
+                            </div>
+                            {% else %}
+                            <div class="document-status document-missing">
+                                <span class="document-icon">❌</span>
+                                <div>
+                                    <strong>No Resume:</strong> Upload a resume in the <a href="{% url 'jobs:document_list' %}">Documents</a> section
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Cover Letter Status -->
+                            {% if application.cover_letter %}
+                            <div class="document-status document-available">
+                                <span class="document-icon">📝</span>
+                                <div>
+                                    <strong>Cover Letter Available:</strong> {{ application.cover_letter.name }}
+                                    <br><small>{{ application.cover_letter.document_type|title }} • Updated {{ application.cover_letter.updated_at|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                {{ form.attach_cover_letter }}
+                                <label class="form-check-label" for="{{ form.attach_cover_letter.id_for_label }}">
+                                    {{ form.attach_cover_letter.label }}
+                                </label>
+                            </div>
+                            {% else %}
+                            <div class="document-status document-missing">
+                                <span class="document-icon">❌</span>
+                                <div>
+                                    <strong>No Cover Letter:</strong> Upload a cover letter in the <a href="{% url 'jobs:document_list' %}">Documents</a> section
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div class="form-section">
+                            <h5 class="section-title">🚀 Quick Actions</h5>
+                            
+                            <button type="button" class="btn btn-preview me-2 mb-2" onclick="previewEmail()">
+                                👁️ Preview Email
+                            </button>
+                            
+                            <a href="{% url 'jobs:document_upload' %}" class="btn btn-outline-secondary me-2 mb-2">
+                                📄 Upload Documents
+                            </a>
+                            
+                            <a href="{% url 'jobs:application_detail' application.pk %}" class="btn btn-outline-secondary mb-2">
+                                ← Back to Application
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Email Preview Area -->
+                <div id="email-preview-section" style="display: none;">
+                    <div class="form-section">
+                        <h5 class="section-title">👁️ Email Preview</h5>
+                        <div id="email-preview" class="email-preview">
+                            <!-- Preview content will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Buttons -->
+                <div class="form-section text-center">
+                    <button type="submit" class="btn btn-send btn-lg me-3">
+                        📧 Send Email to HR
+                    </button>
+                    <a href="{% url 'jobs:application_detail' application.pk %}" class="btn btn-outline-secondary btn-lg">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function previewEmail() {
+    const previewSection = document.getElementById('email-preview-section');
+    const previewContent = document.getElementById('email-preview');
+    
+    // Show the preview section
+    previewSection.style.display = 'block';
+    
+    // Create preview content
+    const hrName = document.getElementById('{{ form.hr_name.id_for_label }}').value || 'Hiring Manager';
+    const toEmail = document.getElementById('{{ form.to_email.id_for_label }}').value || 'hr@company.com';
+    const customMessage = document.getElementById('{{ form.custom_message.id_for_label }}').value;
+    
+    const previewHtml = `
+        <div style="padding: 20px; background: white; font-family: Arial, sans-serif;">
+            <div style="border-bottom: 2px solid #667eea; padding-bottom: 10px; margin-bottom: 20px;">
+                <h3 style="color: #667eea; margin: 0;">Application for {{ application.position.title }}</h3>
+                <p style="margin: 5px 0 0 0; color: #666;">To: ${toEmail}</p>
+            </div>
+            
+            <p><strong>Dear ${hrName},</strong></p>
+            
+            <p>I hope this email finds you well. I am writing to express my strong interest in the <strong>{{ application.position.title }}</strong> position at <strong>{{ application.position.company.name }}</strong>.</p>
+            
+            ${customMessage ? `
+            <div style="background: #f8f9ff; border-left: 4px solid #667eea; padding: 15px; margin: 20px 0;">
+                <strong>Personal Message:</strong><br>
+                ${customMessage.replace(/\n/g, '<br>')}
+            </div>
+            ` : `
+            <p>I am excited about the opportunity to contribute to {{ application.position.company.name }}'s continued success. With my background and skills, I believe I would be a valuable addition to your team.</p>
+            `}
+            
+            <div style="background: #fff8e1; border: 1px solid #ffd54f; border-radius: 6px; padding: 15px; margin: 20px 0;">
+                <h4 style="color: #f57f17; margin: 0 0 10px 0;">📎 Attached Documents</h4>
+                {% if application.resume %}
+                <p style="margin: 5px 0;">📄 Resume: {{ application.resume.name }}</p>
+                {% endif %}
+                {% if application.cover_letter %}
+                <p style="margin: 5px 0;">📝 Cover Letter: {{ application.cover_letter.name }}</p>
+                {% endif %}
+            </div>
+            
+            <p>I look forward to hearing from you and would be happy to provide any additional information you may need.</p>
+            
+            <p>Best regards,<br>
+            <strong>{{ application.user.get_full_name|default:application.user.username }}</strong></p>
+        </div>
+    `;
+    
+    previewContent.innerHTML = previewHtml;
+    
+    // Scroll to preview
+    previewSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Form validation
+document.getElementById('hr-email-form').addEventListener('submit', function(e) {
+    const resumeChecked = document.getElementById('{{ form.attach_resume.id_for_label }}').checked;
+    const coverLetterChecked = document.getElementById('{{ form.attach_cover_letter.id_for_label }}').checked;
+    
+    if (!resumeChecked && !coverLetterChecked) {
+        e.preventDefault();
+        alert('Please select at least one document to attach (resume or cover letter).');
+        return false;
+    }
+});
+</script>
+{% endblock %}

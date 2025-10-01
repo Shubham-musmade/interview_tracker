@@ -1,0 +1,412 @@
+{% extends 'jobs/base.html' %}
+{% load static %}
+
+{% block title %}{{ application.position.title }} at {{ application.position.company.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .application-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-draft { background-color: #6c757d; color: white; }
+    .status-applied { background-color: #007bff; color: white; }
+    .status-phone_screen { background-color: #17a2b8; color: white; }
+    .status-technical_interview { background-color: #fd7e14; color: white; }
+    .status-onsite_interview { background-color: #e83e8c; color: white; }
+    .status-final_interview { background-color: #6f42c1; color: white; }
+    .status-offer_received { background-color: #28a745; color: white; }
+    .status-accepted { background-color: #20c997; color: white; }
+    .status-rejected { background-color: #dc3545; color: white; }
+    .status-withdrawn { background-color: #6c757d; color: white; }
+    
+    .info-card {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+        border-top: 4px solid #667eea;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 5px;
+        display: block;
+    }
+    
+    .info-value {
+        color: #333;
+        margin-bottom: 15px;
+    }
+    
+    .action-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
+        transition: all 0.2s ease;
+    }
+    
+    .action-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .action-button.email {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+    
+    .action-button.hr-email {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+    
+    .action-button.secondary {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    }
+    
+    .document-item {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .document-icon {
+        font-size: 1.5em;
+        margin-right: 15px;
+        color: #667eea;
+    }
+    
+    .priority-high { color: #dc3545; font-weight: 600; }
+    .priority-medium { color: #fd7e14; font-weight: 600; }
+    .priority-low { color: #28a745; font-weight: 600; }
+    
+    .notes-section {
+        background: #f8f9ff;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 20px;
+    }
+    
+    .email-status {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .email-status.not-sent {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+    }
+    
+    .email-status-icon {
+        font-size: 1.2em;
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Application Header -->
+    <div class="application-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="mb-2">{{ application.position.title }}</h2>
+                <h4 class="mb-3">{{ application.position.company.name }}</h4>
+                <p class="mb-0">
+                    <i class="fas fa-map-marker-alt"></i> {{ application.position.location|default:"Location not specified" }} • 
+                    <i class="fas fa-briefcase"></i> {{ application.position.get_employment_type_display }}
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <span class="status-badge status-{{ application.status|lower }}">
+                    {{ application.get_status_display }}
+                </span>
+                <div class="mt-2">
+                    <span class="priority-{{ application.priority|lower }}">
+                        <i class="fas fa-flag"></i> {{ application.get_priority_display }} Priority
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Application Details -->
+            <div class="info-card">
+                <h5 class="mb-4"><i class="fas fa-info-circle"></i> Application Details</h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="info-label">Applied Date:</span>
+                        <div class="info-value">
+                            {% if application.applied_date %}
+                                {{ application.applied_date|date:"F d, Y" }}
+                            {% else %}
+                                Not yet applied
+                            {% endif %}
+                        </div>
+                        
+                        <span class="info-label">Deadline:</span>
+                        <div class="info-value">
+                            {% if application.deadline %}
+                                {{ application.deadline|date:"F d, Y" }}
+                            {% else %}
+                                No deadline set
+                            {% endif %}
+                        </div>
+                        
+                        <span class="info-label">Salary Expectation:</span>
+                        <div class="info-value">
+                            {% if application.salary_expectation %}
+                                ${{ application.salary_expectation|floatformat:0 }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <span class="info-label">Created:</span>
+                        <div class="info-value">{{ application.created_at|date:"F d, Y \a\t g:i A" }}</div>
+                        
+                        <span class="info-label">Last Updated:</span>
+                        <div class="info-value">{{ application.updated_at|date:"F d, Y \a\t g:i A" }}</div>
+                        
+                        {% if application.position.job_url %}
+                        <span class="info-label">Job Posting:</span>
+                        <div class="info-value">
+                            <a href="{{ application.position.job_url }}" target="_blank" class="text-primary">
+                                <i class="fas fa-external-link-alt"></i> View Original Posting
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            {% if application.hr_email or application.hr_name or application.recruiter_email or application.recruiter_name %}
+            <div class="info-card">
+                <h5 class="mb-4"><i class="fas fa-users"></i> Contact Information</h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        {% if application.hr_name or application.hr_email %}
+                        <span class="info-label">HR Contact:</span>
+                        <div class="info-value">
+                            {% if application.hr_name %}{{ application.hr_name }}{% endif %}
+                            {% if application.hr_email %}
+                                {% if application.hr_name %}<br>{% endif %}
+                                <a href="mailto:{{ application.hr_email }}">{{ application.hr_email }}</a>
+                            {% endif %}
+                            {% if application.hr_phone %}
+                                <br><i class="fas fa-phone"></i> {{ application.hr_phone }}
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        {% if application.recruiter_name or application.recruiter_email %}
+                        <span class="info-label">Recruiter:</span>
+                        <div class="info-value">
+                            {% if application.recruiter_name %}{{ application.recruiter_name }}{% endif %}
+                            {% if application.recruiter_email %}
+                                {% if application.recruiter_name %}<br>{% endif %}
+                                <a href="mailto:{{ application.recruiter_email }}">{{ application.recruiter_email }}</a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Email Status -->
+            <div class="{% if application.email_sent %}email-status{% else %}email-status not-sent{% endif %}">
+                <span class="email-status-icon">
+                    {% if application.email_sent %}✅{% else %}⏳{% endif %}
+                </span>
+                <div>
+                    {% if application.email_sent %}
+                        <strong>Email Sent!</strong> Application was sent on {{ application.email_sent_date|date:"F d, Y \a\t g:i A" }}
+                    {% else %}
+                        <strong>Ready to Send:</strong> Your application is ready to be sent to HR
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="info-card">
+                <h5 class="mb-4"><i class="fas fa-cog"></i> Actions</h5>
+                
+                <div class="d-flex flex-wrap">
+                    <!-- Enhanced HR Email Button -->
+                    <a href="{% url 'jobs:send_hr_email' application.pk %}" class="action-button hr-email">
+                        <i class="fas fa-envelope"></i> Send Professional Email to HR
+                    </a>
+                    
+                    <!-- Traditional Email Button -->
+                    <a href="{% url 'jobs:send_application_email' application.pk %}" class="action-button email">
+                        <i class="fas fa-paper-plane"></i> Send Basic Email
+                    </a>
+                    
+                    <!-- Other Actions -->
+                    <a href="{% url 'jobs:application_edit' application.pk %}" class="action-button">
+                        <i class="fas fa-edit"></i> Edit Application
+                    </a>
+                    
+                    <a href="{% url 'jobs:add_interview_round' application.pk %}" class="action-button secondary">
+                        <i class="fas fa-calendar-plus"></i> Add Interview
+                    </a>
+                    
+                    <a href="{% url 'jobs:add_application_note' application.pk %}" class="action-button secondary">
+                        <i class="fas fa-sticky-note"></i> Add Note
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Job Description -->
+            {% if application.position.description %}
+            <div class="info-card">
+                <h5 class="mb-3"><i class="fas fa-file-alt"></i> Job Description</h5>
+                <div class="text-muted">{{ application.position.description|linebreaks }}</div>
+            </div>
+            {% endif %}
+            
+            <!-- Job Requirements -->
+            {% if application.position.requirements %}
+            <div class="info-card">
+                <h5 class="mb-3"><i class="fas fa-list-check"></i> Requirements</h5>
+                <div class="text-muted">{{ application.position.requirements|linebreaks }}</div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Documents -->
+            <div class="info-card">
+                <h5 class="mb-4"><i class="fas fa-paperclip"></i> Attached Documents</h5>
+                
+                {% if application.resume %}
+                <div class="document-item">
+                    <div class="document-icon">📄</div>
+                    <div>
+                        <strong>Resume:</strong> {{ application.resume.name }}<br>
+                        <small class="text-muted">Updated {{ application.resume.updated_at|date:"M d, Y" }}</small>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-muted mb-3">
+                    <i class="fas fa-exclamation-triangle"></i> No resume attached
+                </div>
+                {% endif %}
+                
+                {% if application.cover_letter %}
+                <div class="document-item">
+                    <div class="document-icon">📝</div>
+                    <div>
+                        <strong>Cover Letter:</strong> {{ application.cover_letter.name }}<br>
+                        <small class="text-muted">Updated {{ application.cover_letter.updated_at|date:"M d, Y" }}</small>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-muted mb-3">
+                    <i class="fas fa-exclamation-triangle"></i> No cover letter attached
+                </div>
+                {% endif %}
+                
+                <a href="{% url 'jobs:document_list' %}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-upload"></i> Manage Documents
+                </a>
+            </div>
+            
+            <!-- Company Info -->
+            <div class="info-card">
+                <h5 class="mb-4"><i class="fas fa-building"></i> Company Information</h5>
+                
+                <span class="info-label">Company:</span>
+                <div class="info-value">{{ application.position.company.name }}</div>
+                
+                {% if application.position.company.website %}
+                <span class="info-label">Website:</span>
+                <div class="info-value">
+                    <a href="{{ application.position.company.website }}" target="_blank">
+                        {{ application.position.company.website }}
+                    </a>
+                </div>
+                {% endif %}
+                
+                {% if application.position.company.industry %}
+                <span class="info-label">Industry:</span>
+                <div class="info-value">{{ application.position.company.industry }}</div>
+                {% endif %}
+                
+                {% if application.position.company.location %}
+                <span class="info-label">Location:</span>
+                <div class="info-value">{{ application.position.company.location }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Interview Rounds -->
+            {% if interview_rounds %}
+            <div class="info-card">
+                <h5 class="mb-4"><i class="fas fa-calendar-alt"></i> Interview Rounds</h5>
+                {% for round in interview_rounds %}
+                <div class="mb-3 p-2 border-start border-3 border-primary">
+                    <strong>Round {{ round.round_number }}: {{ round.get_interview_type_display }}</strong><br>
+                    <small class="text-muted">
+                        {{ round.scheduled_date|date:"F d, Y \a\t g:i A" }}<br>
+                        Status: {{ round.get_status_display }}
+                    </small>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Notes Section -->
+    {% if application.notes %}
+    <div class="notes-section">
+        <h5><i class="fas fa-sticky-note"></i> Notes</h5>
+        <div class="mt-3">{{ application.notes|linebreaks }}</div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

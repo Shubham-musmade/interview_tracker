@@ -15,6 +15,7 @@ urlpatterns = [
     path('applications/<int:pk>/edit/', views.application_edit, name='application_edit'),
     path('applications/<int:pk>/delete/', views.application_delete, name='application_delete'),
     path('applications/<int:pk>/send-email/', views.send_application_email_view, name='send_application_email'),
+    path('applications/<int:pk>/send-hr-email/', views.send_hr_email_view, name='send_hr_email'),
     
     # Interview Rounds
     path('applications/<int:application_pk>/add-interview/', views.add_interview_round, name='add_interview_round'),
@@ -39,4 +40,11 @@ urlpatterns = [
     
     # Statistics
     path('statistics/', views.statistics, name='statistics'),
+    
+    # User Email Management
+    path('emails/', views.user_email_list, name='user_email_list'),
+    path('emails/add/', views.user_email_create, name='user_email_create'),
+    path('emails/<int:pk>/edit/', views.user_email_edit, name='user_email_edit'),
+    path('emails/<int:pk>/delete/', views.user_email_delete, name='user_email_delete'),
+    path('emails/<int:pk>/set-default/', views.user_email_set_default, name='user_email_set_default'),
 ]

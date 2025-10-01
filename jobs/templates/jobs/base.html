@@ -74,6 +74,12 @@
                             </a>
                         </li>
                         <li class="nav-item" role="none">
+                            <a class="nav-link {% if 'user_email' in request.resolver_match.url_name %}active{% endif %}" 
+                               href="{% url 'jobs:user_email_list' %}" role="menuitem">
+                                <i class="bi bi-envelope me-1" aria-hidden="true"></i>My Emails
+                            </a>
+                        </li>
+                        <li class="nav-item" role="none">
                             <a class="nav-link {% if request.resolver_match.url_name == 'company_list' %}active{% endif %}" 
                                href="{% url 'jobs:company_list' %}" role="menuitem">
                                 <i class="bi bi-building me-1" aria-hidden="true"></i>Companies

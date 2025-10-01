@@ -1,0 +1,260 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}{{ title }} - JobTracker Pro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="display-6 fw-bold mb-2">💼 {{ title }}</h1>
+                <p class="text-muted mb-0">{% if position %}Update job position details{% else %}Add a new job position for tracking applications{% endif %}</p>
+            </div>
+            <a href="{% url 'jobs:application_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Applications
+            </a>
+        </div>
+
+        <div class="card border-0 mb-4">
+            <div class="card-body p-4">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row g-4">
+                        <!-- Company Selection -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.company.label }} *</label>
+                            {{ form.company }}
+                            {% if form.company.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.company.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Select the company for this position</small>
+                        </div>
+                        
+                        <!-- Job Title -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.title.label }} *</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.title.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Employment Type -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-medium">{{ form.employment_type.label }}</label>
+                            {{ form.employment_type }}
+                            {% if form.employment_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.employment_type.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Location -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-medium">{{ form.location.label }}</label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.location.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Remote Allowed -->
+                        <div class="col-md-4 d-flex align-items-end">
+                            <div class="form-check">
+                                {{ form.remote_allowed }}
+                                <label class="form-check-label fw-medium" for="{{ form.remote_allowed.id_for_label }}">
+                                    {{ form.remote_allowed.label }}
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Salary Range -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.salary_min.label }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.salary_min }}
+                            </div>
+                            {% if form.salary_min.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.salary_min.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.salary_max.label }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.salary_max }}
+                            </div>
+                            {% if form.salary_max.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.salary_max.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Job URL -->
+                        <div class="col-12">
+                            <label class="form-label fw-medium">{{ form.job_url.label }}</label>
+                            {{ form.job_url }}
+                            {% if form.job_url.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.job_url.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Link to the original job posting</small>
+                        </div>
+
+                        <!-- Job Description -->
+                        <div class="col-12">
+                            <label class="form-label fw-medium">{{ form.description.label }}</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.description.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Detailed job description and responsibilities</small>
+                        </div>
+
+                        <!-- Job Requirements -->
+                        <div class="col-12">
+                            <label class="form-label fw-medium">{{ form.requirements.label }}</label>
+                            {{ form.requirements }}
+                            {% if form.requirements.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.requirements.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Required skills, experience, and qualifications</small>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                            <i class="bi bi-{% if position %}pencil{% else %}plus-circle{% endif %} me-2"></i>{% if position %}Update Position{% else %}Create Position{% endif %}
+                        </button>
+                        <a href="{% url 'jobs:application_list' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-x-lg me-1"></i>Cancel
+                        </a>
+                    </div>
+
+                    <!-- Form Validation Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger mt-3" role="alert">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card border-0">
+            <div class="card-body p-4">
+                <h6 class="card-title fw-bold mb-3">Quick Actions</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="{% url 'jobs:company_create' %}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-building-add me-2"></i>Add New Company
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'jobs:company_list' %}" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-building me-2"></i>Manage Companies
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-check {
+        padding-top: 8px;
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+    }
+    
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .form-label.fw-medium {
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Bootstrap form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+
+// Salary validation
+document.addEventListener('DOMContentLoaded', function() {
+    const salaryMin = document.getElementById('{{ form.salary_min.id_for_label }}');
+    const salaryMax = document.getElementById('{{ form.salary_max.id_for_label }}');
+    
+    function validateSalaryRange() {
+        if (salaryMin.value && salaryMax.value) {
+            const min = parseFloat(salaryMin.value);
+            const max = parseFloat(salaryMax.value);
+            
+            if (min > max) {
+                salaryMax.setCustomValidity('Maximum salary must be greater than minimum salary');
+            } else {
+                salaryMax.setCustomValidity('');
+            }
+        }
+    }
+    
+    if (salaryMin && salaryMax) {
+        salaryMin.addEventListener('blur', validateSalaryRange);
+        salaryMax.addEventListener('blur', validateSalaryRange);
+    }
+});
+</script>
+{% endblock %}

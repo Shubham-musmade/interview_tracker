@@ -1,6 +1,30 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Company, JobPosition, JobApplication, Document, InterviewRound, ApplicationNote
+from .models import Company, JobPosition, JobApplication, Document, InterviewRound, ApplicationNote, UserEmail
+
+
+class UserEmailForm(forms.ModelForm):
+    class Meta:
+        model = UserEmail
+        fields = ['email', 'email_type', 'label', 'is_primary', 'is_active']
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'your.email@example.com'}),
+            'email_type': forms.Select(attrs={'class': 'form-control'}),
+            'label': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Work Gmail, University Email'}),
+            'is_primary': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        self.user = user
+        
+        if self.user:
+            # Check if user has any primary email
+            has_primary = UserEmail.objects.filter(user=self.user, is_primary=True).exists()
+            if not has_primary:
+                self.fields['is_primary'].initial = True
 
 
 class CompanyForm(forms.ModelForm):
@@ -14,6 +38,69 @@ class CompanyForm(forms.ModelForm):
             'industry': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Technology, Finance, etc.'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Brief description about the company...'}),
         }
+
+
+class JobApplicationForm(forms.ModelForm):
+    class Meta:
+        model = JobApplication
+        fields = ['position', 'status', 'priority', 'application_platform', 'platform_url',
+                 'hr_email', 'hr_name', 'hr_phone', 'recruiter_email', 'recruiter_name', 
+                 'applied_date', 'deadline', 'resume', 'cover_letter', 'notes', 'salary_expectation']
+        widgets = {
+            'position': forms.Select(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'priority': forms.Select(attrs={'class': 'form-control'}),
+            'application_platform': forms.Select(attrs={'class': 'form-control'}),
+            'platform_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://linkedin.com/jobs/...'}),
+            'hr_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'hr@company.com'}),
+            'hr_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'HR Contact Name'}),
+            'hr_phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+1 (555) 123-4567'}),
+            'recruiter_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'recruiter@company.com'}),
+            'recruiter_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Recruiter Name'}),
+            'applied_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'deadline': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'resume': forms.Select(attrs={'class': 'form-control'}),
+            'cover_letter': forms.Select(attrs={'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Additional notes...'}),
+            'salary_expectation': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Expected salary'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        if self.user:
+            # Filter documents to only show user's documents
+            self.fields['resume'].queryset = Document.objects.filter(
+                user=self.user, document_type='RESUME'
+            ).order_by('-is_default', '-updated_at')
+            self.fields['cover_letter'].queryset = Document.objects.filter(
+                user=self.user, document_type='COVER_LETTER'
+            ).order_by('-is_default', '-updated_at')
+            
+            # Set default documents if available
+            default_resume = Document.objects.filter(
+                user=self.user, document_type='RESUME', is_default=True
+            ).first()
+            if default_resume:
+                self.fields['resume'].initial = default_resume
+            
+            default_cover_letter = Document.objects.filter(
+                user=self.user, document_type='COVER_LETTER', is_default=True
+            ).first()
+            if default_cover_letter:
+                self.fields['cover_letter'].initial = default_cover_letter
+        
+        self.fields['resume'].empty_label = "Select a resume"
+        self.fields['cover_letter'].empty_label = "Select a cover letter"
+
+    def save(self, commit=True):
+        application = super().save(commit=False)
+        if self.user:
+            application.user = self.user
+        if commit:
+            application.save()
+        return application
 
 
 class JobPositionForm(forms.ModelForm):
@@ -67,13 +154,15 @@ class DocumentForm(forms.ModelForm):
 class JobApplicationForm(forms.ModelForm):
     class Meta:
         model = JobApplication
-        fields = ['position', 'status', 'priority', 'hr_email', 'hr_name', 'hr_phone',
-                 'recruiter_email', 'recruiter_name', 'applied_date', 'deadline',
-                 'resume', 'cover_letter', 'notes', 'salary_expectation']
+        fields = ['position', 'status', 'priority', 'application_platform', 'platform_url',
+                 'hr_email', 'hr_name', 'hr_phone', 'recruiter_email', 'recruiter_name', 
+                 'applied_date', 'deadline', 'resume', 'cover_letter', 'notes', 'salary_expectation']
         widgets = {
             'position': forms.Select(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
             'priority': forms.Select(attrs={'class': 'form-control'}),
+            'application_platform': forms.Select(attrs={'class': 'form-control'}),
+            'platform_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://linkedin.com/jobs/...'}),
             'hr_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'hr@company.com'}),
             'hr_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'HR Contact Name'}),
             'hr_phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+1 (555) 123-4567'}),
@@ -407,3 +496,104 @@ Best regards,
 {user_name}"""
             
             self.fields['message'].initial = default_message
+
+
+class HREmailForm(forms.Form):
+    """Enhanced form for sending professional emails to HR with templates"""
+    sender_email = forms.ModelChoiceField(
+        queryset=UserEmail.objects.none(),
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Send From Email',
+        help_text='Select which email address to send from'
+    )
+    hr_name = forms.CharField(
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'HR Manager Name (Optional)'}),
+        label='HR Contact Name',
+        help_text='For personalized greeting (e.g., "Dear John Smith")'
+    )
+    to_email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'hr@company.com'}),
+        label='HR Email Address'
+    )
+    cc_email = forms.EmailField(
+        required=False,
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'recruiter@company.com (Optional)'}),
+        label='CC Email',
+        help_text='Optional - for copying recruiters or other contacts'
+    )
+    custom_message = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control', 
+            'rows': 6, 
+            'placeholder': 'Add a personalized message about why you\'re interested in this role and what makes you a great fit...'
+        }),
+        label='Personal Message',
+        help_text='Optional - This will replace the default message in the email template'
+    )
+    attach_resume = forms.BooleanField(
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Attach Resume'
+    )
+    attach_cover_letter = forms.BooleanField(
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Attach Cover Letter'
+    )
+    use_template = forms.BooleanField(
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Use Professional Email Template',
+        help_text='Recommended - Uses an attractive HTML email template'
+    )
+
+    def __init__(self, *args, **kwargs):
+        application = kwargs.pop('application', None)
+        super().__init__(*args, **kwargs)
+        
+        if application:
+            # Set up sender email choices
+            user_emails = UserEmail.objects.filter(user=application.user)
+            self.fields['sender_email'].queryset = user_emails
+            
+            # Set primary email as initial
+            primary_email = user_emails.filter(is_primary=True).first()
+            if primary_email:
+                self.fields['sender_email'].initial = primary_email
+            elif user_emails.exists():
+                self.fields['sender_email'].initial = user_emails.first()
+                
+            # Pre-populate fields based on application
+            self.fields['to_email'].initial = application.hr_email or application.recruiter_email
+            self.fields['cc_email'].initial = application.recruiter_email if application.hr_email else None
+            self.fields['hr_name'].initial = application.hr_name
+            
+            # Check if documents are available
+            if not application.resume:
+                self.fields['attach_resume'].initial = False
+                self.fields['attach_resume'].widget.attrs['disabled'] = True
+                self.fields['attach_resume'].help_text = 'No resume uploaded for this application'
+            
+            if not application.cover_letter:
+                self.fields['attach_cover_letter'].initial = False
+                self.fields['attach_cover_letter'].widget.attrs['disabled'] = True
+                self.fields['attach_cover_letter'].help_text = 'No cover letter uploaded for this application'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        attach_resume = cleaned_data.get('attach_resume')
+        attach_cover_letter = cleaned_data.get('attach_cover_letter')
+        
+        if not attach_resume and not attach_cover_letter:
+            raise forms.ValidationError(
+                'You must attach at least one document (resume or cover letter) to send the email.'
+            )
+        
+        return cleaned_data

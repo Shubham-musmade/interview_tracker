@@ -1,0 +1,114 @@
+{% extends 'jobs/base.html' %}
+{% load static %}
+
+{% block title %}My Email Addresses{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-envelope"></i> My Email Addresses</h2>
+                <a href="{% url 'jobs:user_email_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Email
+                </a>
+            </div>
+
+            {% if user_emails %}
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Email Address</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Label</th>
+                                        <th>Added</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for email in user_emails %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if email.is_primary %}
+                                                    <i class="fas fa-star text-warning me-2" title="Primary Email"></i>
+                                                {% endif %}
+                                                <strong>{{ email.email }}</strong>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if email.email_type == 'PERSONAL' %}bg-info
+                                                {% elif email.email_type == 'PROFESSIONAL' %}bg-success
+                                                {% else %}bg-secondary
+                                                {% endif %}">
+                                                {{ email.get_email_type_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if email.is_primary %}
+                                                <span class="badge bg-warning">Primary</span>
+                                            {% elif email.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ email.label|default:"-" }}</td>
+                                        <td>{{ email.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                {% if not email.is_primary %}
+                                                    <a href="{% url 'jobs:user_email_set_default' email.pk %}" 
+                                                       class="btn btn-outline-warning btn-sm" 
+                                                       title="Set as Primary">
+                                                        <i class="fas fa-star"></i>
+                                                    </a>
+                                                {% endif %}
+                                                <a href="{% url 'jobs:user_email_edit' email.pk %}" 
+                                                   class="btn btn-outline-primary btn-sm" 
+                                                   title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                {% if not email.is_primary %}
+                                                    <a href="{% url 'jobs:user_email_delete' email.pk %}" 
+                                                       class="btn btn-outline-danger btn-sm" 
+                                                       title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Note:</strong> Your primary email will be used for sending job applications. 
+                        You can have multiple emails for different purposes (personal, professional, etc.).
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-envelope-open fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Email Addresses Found</h4>
+                    <p class="text-muted">Add your email addresses to start sending job applications.</p>
+                    <a href="{% url 'jobs:user_email_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Your First Email
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
